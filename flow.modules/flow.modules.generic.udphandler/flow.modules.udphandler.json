@@ -1,0 +1,3979 @@
+[
+    {
+        "id": "85778b75.c5b0c8",
+        "type": "subflow",
+        "name": "Read Process Data Output (UI) (2)",
+        "info": "### **Input**\r\n---\r\n# **Global**\r\n\r\n- IP of Master: \r\n\r\n    ## **global.ip:**\r\n\r\n                    e.g. \"192.168.0.15\"\r\n\r\n---\r\n# **Local**\r\n\r\n- Ports: \r\n\r\n    ## **msg.payload: **\r\n    \r\n                    true or false (for every Port)\r\n                    \r\n                    For every Port must be exist a Object.\r\n                    The number of the object is similar to the port Number.\r\n                    \r\n                        e.g.: payload:\r\n                                0: true     =   Port 0 is active\r\n                                1: false    =   Port 1 is not active\r\n                                2: false    =   Port 2 is not active\r\n                                3: true     =   Port 3 is active\r\n                                ...\r\n\r\n### **Output**\r\n---\r\n- First Output: \r\n\r\n                    Copy of the finish udp Message wich will be sent.\r\n\r\n- Second Output: \r\n\r\n                    Error msg if one of the input variables is missing, \r\n                    containing the info which variable is missing.  ",
+        "in": [
+            {
+                "x": 57,
+                "y": 72,
+                "wires": [
+                    {
+                        "id": "5376479d.58e388"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 700,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "b50678b5.aedca8",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 430,
+                "y": 122,
+                "wires": [
+                    {
+                        "id": "5376479d.58e388",
+                        "port": 1
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "b50678b5.aedca8",
+        "type": "function",
+        "z": "85778b75.c5b0c8",
+        "name": "Set Payload to Buffer",
+        "func": "msg.port = '1999'; //UDP Port for Master\n\n//get the number of Ports which are configured\nlet numberOfPorts = Object.keys(msg.payload).length;\n\nlet ports = msg.payload;\n\nfor (i = 0; i <= numberOfPorts - 1; i++)\n{\n        if(ports[i] === true) //for every Port | true = selected -- transmit \n        {\n            let portNumber = '0' + i.toString(16); \n            \n            let complete_hex = '05 00 02 0D ' + portNumber; //create a String with the UDP Message\n            \n            var string = complete_hex.replace(/\\s/g,''); //delete all blanks = '0500020D...'\n            msg.payload = Buffer.from(string,\"hex\"); //create a Buffer with the UDP Message and move it to payload\n    \n            node.send(msg); //sends the finished UDP msg. for one Port asynchrone\n        }\n        else // | false = not selected -- not transmit\n        {}\n}\n\nreturn;\n\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 513,
+        "y": 66,
+        "wires": [
+            [
+                "f5827eec.f702f"
+            ]
+        ]
+    },
+    {
+        "id": "f5827eec.f702f",
+        "type": "udp out",
+        "z": "85778b75.c5b0c8",
+        "name": "",
+        "addr": "",
+        "iface": "",
+        "port": "",
+        "ipv": "udp4",
+        "outport": "",
+        "base64": false,
+        "multicast": "false",
+        "x": 860,
+        "y": 65,
+        "wires": []
+    },
+    {
+        "id": "5376479d.58e388",
+        "type": "function",
+        "z": "85778b75.c5b0c8",
+        "name": "move global settings in msg",
+        "func": "var errorNumber = 0; //counts the number of errors\nvar errorMessage = []; //contains one or more strings with the error Message\n\nlet ip = global.get(\"ip\");\nif(ip !== undefined)\n{\n    msg.ip = ip;\n}\nelse\n{\n    errorMessage[errorNumber] = \"please set a UDP IP\";\n    errorNumber++;\n}\n\nlet ports = msg.payload;\nif (ports !== undefined)\n{}\nelse\n{\n    errorMessage[errorNumber] = \" please select one or more Ports\";\n    errorNumber++;\n}\n\nif(errorNumber >= 1)\n{\n    var msg2 = {payload: 'Error: ' + errorMessage}; //if a Error occur the errorMessage is move to the Payload of the second Output\n    return [null, msg2]; //only the second Output containing a msg. with the error String\n}\nelse\n{}\n\nreturn [msg, null]; //only the first Output containing the msg. with the global settings",
+        "outputs": "2",
+        "noerr": 0,
+        "x": 251,
+        "y": 72,
+        "wires": [
+            [
+                "b50678b5.aedca8"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "6ce7e017.49ea1",
+        "type": "comment",
+        "z": "85778b75.c5b0c8",
+        "name": "Output for ErrorCode",
+        "info": "",
+        "x": 440,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "f99b7641.8c51f8",
+        "type": "comment",
+        "z": "85778b75.c5b0c8",
+        "name": "get + check global settings",
+        "info": "",
+        "x": 240,
+        "y": 30,
+        "wires": []
+    },
+    {
+        "id": "5555066f.29bac8",
+        "type": "comment",
+        "z": "85778b75.c5b0c8",
+        "name": "create a Buffer containing the UDP msg",
+        "info": "",
+        "x": 560,
+        "y": 30,
+        "wires": []
+    },
+    {
+        "id": "445c34ce.7cf6dc",
+        "type": "comment",
+        "z": "85778b75.c5b0c8",
+        "name": "send UDP msg",
+        "info": "",
+        "x": 890,
+        "y": 30,
+        "wires": []
+    },
+    {
+        "id": "d1e7443d.4eb578",
+        "type": "comment",
+        "z": "85778b75.c5b0c8",
+        "name": "Output for the finished UDP msg.",
+        "info": "",
+        "x": 770,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "d066d7b5.1e2778",
+        "type": "subflow",
+        "name": "Read Process Data Input (UI) (2)",
+        "info": "### **Input**\r\n---\r\n# **Global**\r\n\r\n- IP of Master: \r\n\r\n    ## **global.ip:**\r\n\r\n                    e.g. \"192.168.0.15\"\r\n\r\n---\r\n# **Local**\r\n\r\n- Ports: \r\n\r\n    ## **msg.payload: **\r\n    \r\n                    true or false (for every Port)\r\n                    \r\n                    For every Port must be exist a Object.\r\n                    The number of the object is similar to the port Number.\r\n                    \r\n                        e.g.: payload:\r\n                                0: true     =   Port 0 is active\r\n                                1: false    =   Port 1 is not active\r\n                                2: false    =   Port 2 is not active\r\n                                3: true     =   Port 3 is active\r\n                                ...\r\n\r\n### **Output**\r\n---\r\n- First Output: \r\n\r\n                    Copy of the finish udp Message wich will be sent.\r\n\r\n- Second Output: \r\n\r\n                    Error msg if one of the input variables is missing, \r\n                    containing the info which variable is missing.  ",
+        "in": [
+            {
+                "x": 60,
+                "y": 360,
+                "wires": [
+                    {
+                        "id": "25b9cc59.d13184"
+                    },
+                    {
+                        "id": "54fc58ef.074168"
+                    },
+                    {
+                        "id": "da437986.7afb38"
+                    },
+                    {
+                        "id": "667bf4c1.48ddcc"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 1280,
+                "y": 180,
+                "wires": [
+                    {
+                        "id": "a1be1822.2bcd48",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1280,
+                "y": 360,
+                "wires": [
+                    {
+                        "id": "bf27a140.2afe5",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1280,
+                "y": 540,
+                "wires": [
+                    {
+                        "id": "aee4d95b.a4e758",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1280,
+                "y": 720,
+                "wires": [
+                    {
+                        "id": "72162efa.f888d",
+                        "port": 0
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "a87ca51e.199ff8",
+        "type": "function",
+        "z": "d066d7b5.1e2778",
+        "name": "Clear Database",
+        "func": "Query = \"DELETE FROM TagToAuftrag WHERE TagToAuftrag_ID < '\"+msg.timestamp+\"'\";\n\nmsg.topic = Query;\nreturn msg;\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 880,
+        "y": 180,
+        "wires": [
+            [
+                "a1be1822.2bcd48",
+                "5b95191c.153498"
+            ]
+        ]
+    },
+    {
+        "id": "a1be1822.2bcd48",
+        "type": "sqldbs",
+        "z": "d066d7b5.1e2778",
+        "mydb": "20f46895.f5aa18",
+        "querytype": "delete",
+        "name": "",
+        "x": 1100,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "25b9cc59.d13184",
+        "type": "function",
+        "z": "d066d7b5.1e2778",
+        "name": "SELECT FROM workflow",
+        "func": "if  (msg.payload == \"on\") {\nQuery = \"SELECT TOP 1 (TagToAuftrag_ID) FROM Workflow ORDER BY TagToAuftrag_ID DESC\" \n\nmsg.topic = Query;\nreturn msg;\n}\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 250,
+        "y": 180,
+        "wires": [
+            [
+                "71d4307.2e8d9d"
+            ]
+        ]
+    },
+    {
+        "id": "71d4307.2e8d9d",
+        "type": "sqldbs",
+        "z": "d066d7b5.1e2778",
+        "mydb": "20f46895.f5aa18",
+        "querytype": "select",
+        "name": "",
+        "x": 480,
+        "y": 180,
+        "wires": [
+            [
+                "d13055e7.586778",
+                "5968aba8.41db84"
+            ]
+        ]
+    },
+    {
+        "id": "d13055e7.586778",
+        "type": "debug",
+        "z": "d066d7b5.1e2778",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 690,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "5b95191c.153498",
+        "type": "debug",
+        "z": "d066d7b5.1e2778",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1050,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "5968aba8.41db84",
+        "type": "function",
+        "z": "d066d7b5.1e2778",
+        "name": "Set AuftragID",
+        "func": "msg.TagToAuftragID = msg.payload[0][0].TagToAuftrag_ID - 2000;\n// 1000, weil max. 200 Stk am Tag durch die Produktion laufen und die max. Durchlaufzeit 4 Tage beträgt --> Inkl. Puffer, falls es Probleme gibt. \n\n\nreturn msg;\n\n\n\n \n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 700,
+        "y": 180,
+        "wires": [
+            [
+                "a87ca51e.199ff8",
+                "bc27557d.f9a5f8"
+            ]
+        ]
+    },
+    {
+        "id": "bc27557d.f9a5f8",
+        "type": "debug",
+        "z": "d066d7b5.1e2778",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 850,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "9cf5f6f3.d7ff48",
+        "type": "function",
+        "z": "d066d7b5.1e2778",
+        "name": "Clear Database",
+        "func": "Query = \"DELETE FROM fuellstand WHERE timestamp < '\"+msg.timestamp+\"'\";\n\nmsg.topic = Query;\nreturn msg;\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 880,
+        "y": 360,
+        "wires": [
+            [
+                "bf27a140.2afe5",
+                "7cf24db3.070544"
+            ]
+        ]
+    },
+    {
+        "id": "bf27a140.2afe5",
+        "type": "sqldbs",
+        "z": "d066d7b5.1e2778",
+        "mydb": "20f46895.f5aa18",
+        "querytype": "delete",
+        "name": "",
+        "x": 1100,
+        "y": 360,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "54fc58ef.074168",
+        "type": "function",
+        "z": "d066d7b5.1e2778",
+        "name": "SELECT FROM fuellstand",
+        "func": "if (msg.payload == \"on\"){\nQuery = \"SELECT TOP 1 (timestamp) FROM fuellstand ORDER BY timestamp DESC\" ;\n\nmsg.topic = Query;\nreturn msg;\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 250,
+        "y": 360,
+        "wires": [
+            [
+                "55c9417c.cfd16"
+            ]
+        ]
+    },
+    {
+        "id": "55c9417c.cfd16",
+        "type": "sqldbs",
+        "z": "d066d7b5.1e2778",
+        "mydb": "20f46895.f5aa18",
+        "querytype": "select",
+        "name": "",
+        "x": 480,
+        "y": 360,
+        "wires": [
+            [
+                "f07aa5e2.aeff48",
+                "a78a6256.5e0e5"
+            ]
+        ]
+    },
+    {
+        "id": "f07aa5e2.aeff48",
+        "type": "debug",
+        "z": "d066d7b5.1e2778",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 690,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "7cf24db3.070544",
+        "type": "debug",
+        "z": "d066d7b5.1e2778",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1050,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "a78a6256.5e0e5",
+        "type": "function",
+        "z": "d066d7b5.1e2778",
+        "name": "Set Timestamp",
+        "func": "msg.timestamp = msg.payload[0][0].timestamp - 6000000;\n// 6 Milliarden, weil Daten von ca 70 Tagen aufrufbar sein sollten (ca. 2 Monate --> Bisschen mehr!)\n\n\nreturn msg;\n\n\n\n \n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 700,
+        "y": 360,
+        "wires": [
+            [
+                "9cf5f6f3.d7ff48",
+                "244425ff.548aea"
+            ]
+        ]
+    },
+    {
+        "id": "244425ff.548aea",
+        "type": "debug",
+        "z": "d066d7b5.1e2778",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 850,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "b78d331b.6e9e1",
+        "type": "function",
+        "z": "d066d7b5.1e2778",
+        "name": "Clear Database",
+        "func": "Query = \"DELETE FROM TagToAuftrag WHERE TagToAuftrag_ID < '\"+msg.timestamp+\"'\";\n\nmsg.topic = Query;\nreturn msg;\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 880,
+        "y": 540,
+        "wires": [
+            [
+                "aee4d95b.a4e758",
+                "fb8d9639.37f4b8"
+            ]
+        ]
+    },
+    {
+        "id": "aee4d95b.a4e758",
+        "type": "sqldbs",
+        "z": "d066d7b5.1e2778",
+        "mydb": "20f46895.f5aa18",
+        "querytype": "delete",
+        "name": "",
+        "x": 1100,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "da437986.7afb38",
+        "type": "function",
+        "z": "d066d7b5.1e2778",
+        "name": "SELECT FROM TagToAuftrag",
+        "func": "if  (msg.payload == \"on\") {\nQuery = \"SELECT TOP 1 (TagToAuftrag_ID) FROM Workflow ORDER BY TagToAuftrag_ID DESC\" \n\nmsg.topic = Query;\nreturn msg;\n}\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 230,
+        "y": 540,
+        "wires": [
+            [
+                "180a22da.43669d"
+            ]
+        ]
+    },
+    {
+        "id": "180a22da.43669d",
+        "type": "sqldbs",
+        "z": "d066d7b5.1e2778",
+        "mydb": "20f46895.f5aa18",
+        "querytype": "select",
+        "name": "",
+        "x": 480,
+        "y": 540,
+        "wires": [
+            [
+                "ff1e067a.af59f8",
+                "7fa150f6.e5e43"
+            ]
+        ]
+    },
+    {
+        "id": "ff1e067a.af59f8",
+        "type": "debug",
+        "z": "d066d7b5.1e2778",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 690,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "fb8d9639.37f4b8",
+        "type": "debug",
+        "z": "d066d7b5.1e2778",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1050,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "7fa150f6.e5e43",
+        "type": "function",
+        "z": "d066d7b5.1e2778",
+        "name": "Set TagToAuftragID",
+        "func": "msg.TagToAuftragID = msg.payload[0][0].TagToAuftrag_ID - 2000;\n\n\n\nreturn msg;\n\n\n\n \n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 690,
+        "y": 540,
+        "wires": [
+            [
+                "b78d331b.6e9e1",
+                "c14e9c8b.02e1f"
+            ]
+        ]
+    },
+    {
+        "id": "c14e9c8b.02e1f",
+        "type": "debug",
+        "z": "d066d7b5.1e2778",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 850,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "743a75d3.2521dc",
+        "type": "function",
+        "z": "d066d7b5.1e2778",
+        "name": "Clear Database",
+        "func": "Query = \"DELETE FROM Auftrag WHERE Auftrag_ID < '\"+msg.timestamp+\"'\";\n\nmsg.topic = Query;\nreturn msg;\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 860,
+        "y": 720,
+        "wires": [
+            [
+                "72162efa.f888d",
+                "4aa07194.81b62"
+            ]
+        ]
+    },
+    {
+        "id": "72162efa.f888d",
+        "type": "sqldbs",
+        "z": "d066d7b5.1e2778",
+        "mydb": "20f46895.f5aa18",
+        "querytype": "delete",
+        "name": "",
+        "x": 1100,
+        "y": 720,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "667bf4c1.48ddcc",
+        "type": "function",
+        "z": "d066d7b5.1e2778",
+        "name": "SELECT FROM Auftrag",
+        "func": "if  (msg.payload == \"on\") {\nQuery = \"SELECT TOP 1 (Auftrag_ID) FROM Auftrag ORDER BY Auftrag_ID DESC\" \n\nmsg.topic = Query;\nreturn msg;\n}\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 250,
+        "y": 720,
+        "wires": [
+            [
+                "554f8882.ef6198"
+            ]
+        ]
+    },
+    {
+        "id": "554f8882.ef6198",
+        "type": "sqldbs",
+        "z": "d066d7b5.1e2778",
+        "mydb": "20f46895.f5aa18",
+        "querytype": "select",
+        "name": "",
+        "x": 480,
+        "y": 720,
+        "wires": [
+            [
+                "d60993ca.a5e27",
+                "d6123895.a116d8"
+            ]
+        ]
+    },
+    {
+        "id": "d60993ca.a5e27",
+        "type": "debug",
+        "z": "d066d7b5.1e2778",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 690,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "4aa07194.81b62",
+        "type": "debug",
+        "z": "d066d7b5.1e2778",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1050,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "d6123895.a116d8",
+        "type": "function",
+        "z": "d066d7b5.1e2778",
+        "name": "Set Auftrag",
+        "func": "msg.AuftragID = msg.payload[0][0].Auftrag_ID - 2000;\n// 6 Milliarden, weil Daten von ca 70 Tagen aufrufbar sein sollten (ca. 2 Monate --> Bisschen mehr!)\n\n\nreturn msg;\n\n\n\n \n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 690,
+        "y": 720,
+        "wires": [
+            [
+                "743a75d3.2521dc",
+                "482a531.5cc20ac"
+            ]
+        ]
+    },
+    {
+        "id": "482a531.5cc20ac",
+        "type": "debug",
+        "z": "d066d7b5.1e2778",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 850,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "20f46895.f5aa18",
+        "type": "sqldbsdatabase",
+        "z": "",
+        "host": "193.28.6.248",
+        "port": "41434",
+        "db": "SCM_OPD_TracingDB",
+        "dialect": "mssql"
+    },
+    {
+        "id": "425f4b64.341834",
+        "type": "subflow",
+        "name": "(old) SM_GetMasterConfig",
+        "info": "",
+        "in": [
+            {
+                "x": 66.66666793823242,
+                "y": 84.33333396911621,
+                "wires": [
+                    {
+                        "id": "c61ccc9.a88143"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 369.9999828338623,
+                "y": 132.22221755981445,
+                "wires": [
+                    {
+                        "id": "c61ccc9.a88143",
+                        "port": 0
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "c61ccc9.a88143",
+        "type": "function",
+        "z": "425f4b64.341834",
+        "name": "Set Payload to Buffer",
+        "func": "msg.ip = msg.info.udpIP;  \nmsg.port = msg.info.udpPort;\n\nlet complete_hex = '05 00 03 11 00';\n\nvar string = complete_hex.replace(/\\s/g,'');\nmsg.payload = Buffer.from(string,\"hex\");\n\ndelete msg.info;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 242.2222137451172,
+        "y": 84.44444274902344,
+        "wires": [
+            [
+                "80751ff5.96d77"
+            ]
+        ]
+    },
+    {
+        "id": "80751ff5.96d77",
+        "type": "udp out",
+        "z": "425f4b64.341834",
+        "name": "",
+        "addr": "",
+        "iface": "",
+        "port": "",
+        "ipv": "udp4",
+        "outport": "",
+        "base64": false,
+        "multicast": "false",
+        "x": 423.33330154418945,
+        "y": 84.44440364837646,
+        "wires": []
+    },
+    {
+        "id": "bdb9ab3.5b80258",
+        "type": "subflow",
+        "name": "(old) (all Ports) ReadProcessDataOutputs",
+        "info": "",
+        "in": [
+            {
+                "x": 55.5555534362793,
+                "y": 62.22222328186035,
+                "wires": [
+                    {
+                        "id": "776710d7.7b6c7"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 591.1110763549805,
+                "y": 112.22221183776855,
+                "wires": [
+                    {
+                        "id": "64f02a29.cebec4",
+                        "port": 0
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "64f02a29.cebec4",
+        "type": "function",
+        "z": "bdb9ab3.5b80258",
+        "name": "Set Payload to Buffer",
+        "func": "msg.ip = msg.info.udpIP;  \nmsg.port = msg.info.udpPort;\n\n//get the number of Ports which are configured\nvar numberOfPorts = msg.info.ports.length;\n\nfor (i=0; i <= numberOfPorts -1; i++)\n{\n    if(msg.info.ports[i].transmit === \"1\")\n    {\n        let port = msg.info.ports[i].portNumber; \n\n        let complete_hex = '05 00 02 0D ' + port;\n        \n        var string = complete_hex.replace(/\\s/g,'');\n        msg.payload = Buffer.from(string,\"hex\");\n    \n        node.send(msg);\n    }\n    else if (msg.info.ports[i].transmit === \"0\")\n    {\n        \n    }\n    else\n    {\n        node.error(\"transmit must be '1' or '0'\");\n    }\n}\nreturn;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 423.3333206176758,
+        "y": 62.222219467163086,
+        "wires": [
+            [
+                "420e9cce.a4a0c4"
+            ]
+        ]
+    },
+    {
+        "id": "420e9cce.a4a0c4",
+        "type": "udp out",
+        "z": "bdb9ab3.5b80258",
+        "name": "",
+        "addr": "",
+        "iface": "",
+        "port": "",
+        "ipv": "udp4",
+        "outport": "",
+        "base64": false,
+        "multicast": "false",
+        "x": 613.9999732971191,
+        "y": 61.972219944000244,
+        "wires": []
+    },
+    {
+        "id": "776710d7.7b6c7",
+        "type": "function",
+        "z": "bdb9ab3.5b80258",
+        "name": "check portNumber",
+        "func": "//get the number of Ports which are configured\nvar highestNumber = msg.info.ports.length -1;\nvar highestNumber2 = highestNumber;\nvar wert1;\nvar wert2;\n\nfor(i=0; i <= highestNumber; i++)\n{\n    wert1 = i;\n    \n    for(j=1; j <= highestNumber2; j++)\n    {\n        wert2 = wert1 + j;\n        if (msg.info.ports[wert1].portNumber !== msg.info.ports[wert2].portNumber)\n        {\n            //node.warn(msg.info.ports[wert1].portNumber + ' !== ' + msg.info.ports[wert2].portNumber);\n        }\n        else\n        {\n            node.error(\"Port is double used\");\n            node.warn(msg.info.ports[wert1].portNumber + ' === ' + msg.info.ports[wert2].portNumber);\n            return;\n        }\n    }\n    highestNumber2 = highestNumber2 - 1;\n    \n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 196.66665649414062,
+        "y": 62.111106872558594,
+        "wires": [
+            [
+                "64f02a29.cebec4"
+            ]
+        ]
+    },
+    {
+        "id": "279a839a.41d1fc",
+        "type": "subflow",
+        "name": "(old) (all Ports) SM_GetMode",
+        "info": "",
+        "in": [
+            {
+                "x": 75.55555725097656,
+                "y": 40.111114501953125,
+                "wires": [
+                    {
+                        "id": "f1b72b6a.e15c28"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 633.3333263397217,
+                "y": 87.55555534362793,
+                "wires": [
+                    {
+                        "id": "799f6036.7059c",
+                        "port": 0
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "cce732b6.07fc7",
+        "type": "udp out",
+        "z": "279a839a.41d1fc",
+        "name": "",
+        "addr": "",
+        "iface": "",
+        "port": "",
+        "ipv": "udp4",
+        "outport": "",
+        "base64": false,
+        "multicast": "false",
+        "x": 663.3333053588867,
+        "y": 39.77777862548828,
+        "wires": []
+    },
+    {
+        "id": "799f6036.7059c",
+        "type": "function",
+        "z": "279a839a.41d1fc",
+        "name": "Set Payload to Buffer",
+        "func": "msg.ip = msg.info.udpIP;  \nmsg.port = msg.info.udpPort;\n\n//get the number of Ports which are configured\nvar numberOfPorts = msg.info.ports.length;\n\nfor (i=0; i <= numberOfPorts -1; i++)\n{\n    if(msg.info.ports[i].transmit === \"1\")\n    {\n        let port = msg.info.ports[i].portNumber; \n        \n        let complete_hex = '05 00 02 0E ' + port;\n    \n        var string = complete_hex.replace(/\\s/g,'');\n        msg.payload = Buffer.from(string,\"hex\");\n    \n        node.send(msg);\n    }\n    else if (msg.info.ports[i].transmit === \"0\")\n    {\n        \n    }\n    else\n    {\n        node.error(\"transmit must be '1' or '0'\");\n    }\n}\n\nreturn;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 469.3333053588867,
+        "y": 40.02777862548828,
+        "wires": [
+            [
+                "cce732b6.07fc7"
+            ]
+        ]
+    },
+    {
+        "id": "f1b72b6a.e15c28",
+        "type": "function",
+        "z": "279a839a.41d1fc",
+        "name": "check portNumber",
+        "func": "//get the number of Ports which are configured\nvar highestNumber = msg.info.ports.length -1;\nvar highestNumber2 = highestNumber;\nvar wert1;\nvar wert2;\n\nfor(i=0; i <= highestNumber; i++)\n{\n    wert1 = i;\n    \n    for(j=1; j <= highestNumber2; j++)\n    {\n        wert2 = wert1 + j;\n        if (msg.info.ports[wert1].portNumber !== msg.info.ports[wert2].portNumber)\n        {\n            //node.warn(msg.info.ports[wert1].portNumber + ' !== ' + msg.info.ports[wert2].portNumber);\n        }\n        else\n        {\n            node.error(\"Port is double used\");\n            node.warn(msg.info.ports[wert1].portNumber + ' === ' + msg.info.ports[wert2].portNumber);\n            return;\n        }\n    }\n    highestNumber2 = highestNumber2 - 1;\n    \n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 232.2222137451172,
+        "y": 40.22222137451172,
+        "wires": [
+            [
+                "799f6036.7059c"
+            ]
+        ]
+    },
+    {
+        "id": "79c45362.c5328c",
+        "type": "subflow",
+        "name": "(old) (allPorts) ReadProcessData",
+        "info": "\"udpIP\":        =   IP adesse of Master\n\"udpPort\":      =   udp Port of Master\n\"ports\":        =   every object stand for one Port\n\"portsNumber\":  =   number of port of Master\n                    ! Port 0 = \"00\"\n                      Port 1 = \"01\"\n                      ...\n\"transmit\":     =   if the information will be transmit\n                    ! Yes = \"1\"\n                      No  = \"0\"",
+        "in": [
+            {
+                "x": 69.99999809265137,
+                "y": 74.55555534362793,
+                "wires": [
+                    {
+                        "id": "78be6e67.5ff6e"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 627.7777671813965,
+                "y": 123.22223663330078,
+                "wires": [
+                    {
+                        "id": "ddf4396a.3536c8",
+                        "port": 0
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "57f3dabc.9305c4",
+        "type": "udp out",
+        "z": "79c45362.c5328c",
+        "name": "",
+        "addr": "",
+        "iface": "",
+        "port": "",
+        "ipv": "udp4",
+        "outport": "",
+        "base64": false,
+        "multicast": "false",
+        "x": 659.2222290039062,
+        "y": 74.3333387374878,
+        "wires": []
+    },
+    {
+        "id": "ddf4396a.3536c8",
+        "type": "function",
+        "z": "79c45362.c5328c",
+        "name": "Set Payload to Buffer",
+        "func": "msg.ip = msg.info.udpIP;  \nmsg.port = msg.info.udpPort;\n\n//get the number of Ports which are configured\nvar numberOfPorts = msg.info.ports.length;\n\nfor (i=0; i <= numberOfPorts -1; i++)\n{\n    if(msg.info.ports[i].transmit === \"1\")\n    {\n        let port = msg.info.ports[i].portNumber; \n\n        let complete_hex = '05 00 02 0A ' + port;\n        \n        var string = complete_hex.replace(/\\s/g,'');\n        msg.payload = Buffer.from(string,\"hex\");\n    \n        node.send(msg);\n    }\n    else if (msg.info.ports[i].transmit === \"0\")\n    {\n        \n    }\n    else\n    {\n        node.error(\"transmit must be '1' or '0'\");\n    }\n}\nreturn;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 460.5555877685547,
+        "y": 74.58334255218506,
+        "wires": [
+            [
+                "57f3dabc.9305c4"
+            ]
+        ]
+    },
+    {
+        "id": "78be6e67.5ff6e",
+        "type": "function",
+        "z": "79c45362.c5328c",
+        "name": "check portNumber",
+        "func": "//get the number of Ports which are configured\nvar highestNumber = msg.info.ports.length -1;\nvar highestNumber2 = highestNumber;\nvar wert1;\nvar wert2;\n\nfor(i=0; i <= highestNumber; i++)\n{\n    wert1 = i;\n    \n    for(j=1; j <= highestNumber2; j++)\n    {\n        wert2 = wert1 + j;\n        if (msg.info.ports[wert1].portNumber !== msg.info.ports[wert2].portNumber)\n        {\n            //node.warn(msg.info.ports[wert1].portNumber + ' !== ' + msg.info.ports[wert2].portNumber);\n        }\n        else\n        {\n            node.error(\"Port is double used\");\n            node.warn(msg.info.ports[wert1].portNumber + ' === ' + msg.info.ports[wert2].portNumber);\n            return;\n        }\n    }\n    highestNumber2 = highestNumber2 - 1;\n    \n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 214.22222328186035,
+        "y": 74.55554962158203,
+        "wires": [
+            [
+                "ddf4396a.3536c8"
+            ]
+        ]
+    },
+    {
+        "id": "947e710c.00b14",
+        "type": "subflow",
+        "name": "(old) (all Ports) GetPortConfig",
+        "info": "",
+        "in": [
+            {
+                "x": 43.33332824707031,
+                "y": 95.77776718139648,
+                "wires": [
+                    {
+                        "id": "414b228c.e27f6c"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 589.9999580383301,
+                "y": 147.77777481079102,
+                "wires": [
+                    {
+                        "id": "40012f42.8e09d",
+                        "port": 0
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "40012f42.8e09d",
+        "type": "function",
+        "z": "947e710c.00b14",
+        "name": "Set Payload to Buffer",
+        "func": "msg.ip = msg.info.udpIP;  \nmsg.port = msg.info.udpPort;\n\n//get the number of Ports which are configured\nvar numberOfPorts = msg.info.ports.length;\n\nfor (i=0; i <= numberOfPorts -1; i++)\n{\n    if(msg.info.ports[i].transmit === \"1\")\n    {\n        let protocollRevision = msg.info.ports[i].protocollRevision;\n        let port = msg.info.ports[i].portNumber; \n\n        let complete_hex = '05 00 ' + protocollRevision + ' 10 ' +  port;\n        \n        var string = complete_hex.replace(/\\s/g,'');\n        msg.payload = Buffer.from(string,\"hex\");\n    \n        node.send(msg);\n    }\n    else if (msg.info.ports[i].transmit === \"0\")\n    {\n        \n    }\n    else\n    {\n        node.error(\"transmit must be '1' or '0'\");\n    }\n}\n\nreturn;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 418.88885498046875,
+        "y": 95.55555152893066,
+        "wires": [
+            [
+                "3a2b1523.76d59a"
+            ]
+        ]
+    },
+    {
+        "id": "3a2b1523.76d59a",
+        "type": "udp out",
+        "z": "947e710c.00b14",
+        "name": "",
+        "addr": "",
+        "iface": "",
+        "port": "",
+        "ipv": "udp4",
+        "outport": "",
+        "base64": false,
+        "multicast": "false",
+        "x": 604.5555210113525,
+        "y": 95.19442176818848,
+        "wires": []
+    },
+    {
+        "id": "414b228c.e27f6c",
+        "type": "function",
+        "z": "947e710c.00b14",
+        "name": "check portNumber",
+        "func": "//get the number of Ports which are configured\nvar highestNumber = msg.info.ports.length -1;\nvar highestNumber2 = highestNumber;\nvar wert1;\nvar wert2;\n\nfor(i=0; i <= highestNumber; i++)\n{\n    wert1 = i;\n    \n    for(j=1; j <= highestNumber2; j++)\n    {\n        wert2 = wert1 + j;\n        if (msg.info.ports[wert1].portNumber !== msg.info.ports[wert2].portNumber)\n        {\n            //node.warn(msg.info.ports[wert1].portNumber + ' !== ' + msg.info.ports[wert2].portNumber);\n        }\n        else\n        {\n            node.error(\"Port is double used\");\n            node.warn(msg.info.ports[wert1].portNumber + ' === ' + msg.info.ports[wert2].portNumber);\n            return;\n        }\n    }\n    highestNumber2 = highestNumber2 - 1;\n    \n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 194.44444274902344,
+        "y": 95.44444274902344,
+        "wires": [
+            [
+                "40012f42.8e09d"
+            ]
+        ]
+    },
+    {
+        "id": "44f06f61.17191",
+        "type": "subflow",
+        "name": "(old) (all Ports) WriteProcessData",
+        "info": "",
+        "in": [
+            {
+                "x": 55.55555725097656,
+                "y": 76.77777481079102,
+                "wires": [
+                    {
+                        "id": "5fdc19fe.4a6598"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 609.9999713897705,
+                "y": 125.77779388427734,
+                "wires": [
+                    {
+                        "id": "af28dbb1.c53e08",
+                        "port": 0
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "af28dbb1.c53e08",
+        "type": "function",
+        "z": "44f06f61.17191",
+        "name": "Set Payload to Buffer",
+        "func": "msg.ip = msg.info.udpIP;  \nmsg.port = msg.info.udpPort;\n\n//get the number of Ports which are configured\nvar numberOfPorts = msg.info.ports.length;\n\nfor (i=0; i <= numberOfPorts -1; i++)\n{\n    if(msg.info.ports[i].transmit === \"1\") //Port für Write Befehl aktiviert\n    {\n        let port = msg.info.ports[i].portNumber; \n        let arrayOfData = msg.info.ports[i].data.length; \n        var dataLength  = arrayOfData; \n        //join the objects of the data array\n        let data_hex = msg.info.ports[i].data.join(' '); \n        let lengthOfData = 5 + dataLength;\n        //convert the number to a string\n        let lengthString = lengthOfData.toString(16);\n        //array oder string?\n        \n        //To-Do -- Länge von Daten über FF noch nicht Möglich\n        let complete_hex = '0' + lengthString + ' 00' +  ' 02 0B ' + port + ' ' + data_hex;\n\n        var string = complete_hex.replace(/\\s/g,'');\n        msg.payload = Buffer.from(string,\"hex\");\n        \n        node.send(msg);\n    }\n    else if(msg.info.ports[i].transmit === \"0\") //Port für Write Befehl deaktiviert\n    {}\n    else\n    {\n        node.error(\"transmit must be '1' or '0'\");\n    }\n}\n\nreturn;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 441.11109924316406,
+        "y": 76.88888359069824,
+        "wires": [
+            [
+                "a8b13c8.b76cbc"
+            ]
+        ]
+    },
+    {
+        "id": "a8b13c8.b76cbc",
+        "type": "udp out",
+        "z": "44f06f61.17191",
+        "name": "",
+        "addr": "",
+        "iface": "",
+        "port": "",
+        "ipv": "udp4",
+        "outport": "",
+        "base64": false,
+        "multicast": "false",
+        "x": 650.6666564941406,
+        "y": 76.74999332427979,
+        "wires": []
+    },
+    {
+        "id": "5fdc19fe.4a6598",
+        "type": "function",
+        "z": "44f06f61.17191",
+        "name": "check portNumber",
+        "func": "//get the number of Ports which are configured\nvar highestNumber = msg.info.ports.length -1;\nvar highestNumber2 = highestNumber;\nvar wert1;\nvar wert2;\n\nfor(i=0; i <= highestNumber; i++)\n{\n    wert1 = i;\n    \n    for(j=1; j <= highestNumber2; j++)\n    {\n        wert2 = wert1 + j;\n        if (msg.info.ports[wert1].portNumber !== msg.info.ports[wert2].portNumber)\n        {\n            //node.warn(msg.info.ports[wert1].portNumber + ' !== ' + msg.info.ports[wert2].portNumber);\n        }\n        else\n        {\n            node.error(\"Port is double used\");\n            node.warn(msg.info.ports[wert1].portNumber + ' === ' + msg.info.ports[wert2].portNumber);\n            return;\n        }\n    }\n    highestNumber2 = highestNumber2 - 1;\n    \n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 199.88888549804688,
+        "y": 76.55556106567383,
+        "wires": [
+            [
+                "af28dbb1.c53e08"
+            ]
+        ]
+    },
+    {
+        "id": "ef6007e5.47b928",
+        "type": "subflow",
+        "name": "(old) (all Ports) SM_SetPortConfig",
+        "info": "",
+        "in": [
+            {
+                "x": 82.22222137451172,
+                "y": 72.33333778381348,
+                "wires": [
+                    {
+                        "id": "b08746a5.8f7048"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 664.4444618225098,
+                "y": 124.33332824707031,
+                "wires": [
+                    {
+                        "id": "96d0a979.6544d8",
+                        "port": 0
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "96d0a979.6544d8",
+        "type": "function",
+        "z": "ef6007e5.47b928",
+        "name": "Set Payload to Buffer",
+        "func": "msg.ip = msg.info.udpIP;  \nmsg.port = msg.info.udpPort;\n\n//get the number of Ports which are configured\nvar numberOfPorts = msg.info.ports.length;\n\nfor (i=0; i <= numberOfPorts -1; i++)\n{\n    if(msg.info.ports[i].transmit === \"1\")\n    {\n        switch(msg.info.ports[i].protocollRevision)\n        {\n            case \"02\":\n                var byte0 = \"24\";\n                var fehlendeBytes = ' 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 20 20';\n                break;\n            case \"03\":\n                var byte0 = \"2C\";\n                var fehlendeBytes = ' 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 20 20 00 00 00 00 00 00 00 00';\n                break; \n    \n            default:\n                node.error(\"protocollRevision must be 02 or 03\");\n                break;\n        }\n    \n        let protocollRevision = msg.info.ports[i].protocollRevision;\n        let port = msg.info.ports[i].portNumber; \n        let portModeDetails = msg.info.ports[i].portModeDetails;\n        let portMode = msg.info.ports[i].portMode;\n        let iolRevision = msg.info.ports[i].iolRevision;\n        let dsConfig = msg.info.ports[i].dsConfig;\n        let inspectionLevel = msg.info.ports[i].inspectionLevel;\n\n        let complete_hex = byte0 + ' 00 ' + protocollRevision + ' 0F ' +  port + ' ' + portModeDetails + ' ' + portMode + ' ' + iolRevision + ' ' + dsConfig + ' 00 00 00 ' + inspectionLevel + fehlendeBytes;\n        \n        var string = complete_hex.replace(/\\s/g,'');\n        msg.payload = Buffer.from(string,\"hex\");\n    \n        node.send(msg);\n    }\n    else if (msg.info.ports[i].transmit === \"0\")\n    {}\n    else\n    {\n        node.error(\"transmit must be '1' or '0'\");\n    }\n}\n\nreturn;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 500,
+        "y": 72.11110305786133,
+        "wires": [
+            [
+                "f1649286.88662"
+            ]
+        ]
+    },
+    {
+        "id": "f1649286.88662",
+        "type": "udp out",
+        "z": "ef6007e5.47b928",
+        "name": "",
+        "addr": "",
+        "iface": "",
+        "port": "",
+        "ipv": "udp4",
+        "outport": "",
+        "base64": false,
+        "multicast": "false",
+        "x": 686.2222900390625,
+        "y": 71.86111068725586,
+        "wires": []
+    },
+    {
+        "id": "b08746a5.8f7048",
+        "type": "function",
+        "z": "ef6007e5.47b928",
+        "name": "check portNumber",
+        "func": "//get the number of Ports which are configured\nvar highestNumber = msg.info.ports.length -1;\nvar highestNumber2 = highestNumber;\nvar wert1;\nvar wert2;\n\nfor(i=0; i <= highestNumber; i++)\n{\n    wert1 = i;\n    \n    for(j=1; j <= highestNumber2; j++)\n    {\n        wert2 = wert1 + j;\n        if (msg.info.ports[wert1].portNumber !== msg.info.ports[wert2].portNumber)\n        {\n            //node.warn(msg.info.ports[wert1].portNumber + ' !== ' + msg.info.ports[wert2].portNumber);\n        }\n        else\n        {\n            node.error(\"Port is double used\");\n            node.warn(msg.info.ports[wert1].portNumber + ' === ' + msg.info.ports[wert2].portNumber);\n            return;\n        }\n    }\n    highestNumber2 = highestNumber2 - 1;\n    \n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 251.11109924316406,
+        "y": 72.1111068725586,
+        "wires": [
+            [
+                "96d0a979.6544d8"
+            ]
+        ]
+    },
+    {
+        "id": "89f7f4e0.ff6408",
+        "type": "subflow",
+        "name": "(old) SM_GetMode",
+        "info": "",
+        "in": [
+            {
+                "x": 51,
+                "y": 68,
+                "wires": [
+                    {
+                        "id": "5fd56c41.64ca14"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 381.1110954284668,
+                "y": 126.66665840148926,
+                "wires": [
+                    {
+                        "id": "5fd56c41.64ca14",
+                        "port": 0
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "ee28d236.8ff25",
+        "type": "udp out",
+        "z": "89f7f4e0.ff6408",
+        "name": "",
+        "addr": "",
+        "iface": "",
+        "port": "",
+        "ipv": "udp4",
+        "outport": "",
+        "base64": false,
+        "multicast": "false",
+        "x": 426,
+        "y": 68,
+        "wires": []
+    },
+    {
+        "id": "5fd56c41.64ca14",
+        "type": "function",
+        "z": "89f7f4e0.ff6408",
+        "name": "Set Payload to Buffer",
+        "func": "msg.ip = msg.info.udpIP;  \nmsg.port = msg.info.udpPort;\n\nlet port = msg.info.bniPort[0]; //for testing only on Port is possible\n\n\nlet complete_hex = '05 00 02 0E '+ port;\n\nvar string = complete_hex.replace(/\\s/g,'');\nmsg.payload = Buffer.from(string,\"hex\");\n\ndelete msg.info;\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 232,
+        "y": 68.25,
+        "wires": [
+            [
+                "ee28d236.8ff25"
+            ]
+        ]
+    },
+    {
+        "id": "b04d8755.b5f488",
+        "type": "subflow",
+        "name": "(old) GetPortConfig",
+        "info": "",
+        "in": [
+            {
+                "x": 73,
+                "y": 78,
+                "wires": [
+                    {
+                        "id": "688d95e9.17c05c"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 371.1110897064209,
+                "y": 125.55555152893066,
+                "wires": [
+                    {
+                        "id": "688d95e9.17c05c",
+                        "port": 0
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "688d95e9.17c05c",
+        "type": "function",
+        "z": "b04d8755.b5f488",
+        "name": "Set Payload to Buffer",
+        "func": "msg.ip = msg.info.udpIP;  \nmsg.port = msg.info.udpPort;\n\n\nlet complete_hex = \"05 00 \" + msg.info.protocollRevision + ' 10 ' + msg.info.bniPort;\n\n\nvar string = complete_hex.replace(/\\s/g,'');\nmsg.payload = Buffer.from(string,\"hex\");\n\ndelete msg.info;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 235,
+        "y": 78,
+        "wires": [
+            [
+                "82411529.4b9638"
+            ]
+        ]
+    },
+    {
+        "id": "82411529.4b9638",
+        "type": "udp out",
+        "z": "b04d8755.b5f488",
+        "name": "",
+        "addr": "",
+        "iface": "",
+        "port": "",
+        "ipv": "udp4",
+        "outport": "",
+        "base64": false,
+        "multicast": "false",
+        "x": 443.9999885559082,
+        "y": 77.7499885559082,
+        "wires": []
+    },
+    {
+        "id": "dec7846c.c8bfc8",
+        "type": "subflow",
+        "name": "(old) SM_SetPortConfig",
+        "info": "",
+        "in": [
+            {
+                "x": 33,
+                "y": 109,
+                "wires": [
+                    {
+                        "id": "7fe5b39f.c5c5cc"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 314.44443130493164,
+                "y": 163.33332538604736,
+                "wires": [
+                    {
+                        "id": "7fe5b39f.c5c5cc",
+                        "port": 0
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "370ee5e4.6f587a",
+        "type": "udp out",
+        "z": "dec7846c.c8bfc8",
+        "name": "",
+        "addr": "",
+        "iface": "",
+        "port": "",
+        "ipv": "udp4",
+        "outport": "",
+        "base64": false,
+        "multicast": "false",
+        "x": 376.5,
+        "y": 109,
+        "wires": []
+    },
+    {
+        "id": "7fe5b39f.c5c5cc",
+        "type": "function",
+        "z": "dec7846c.c8bfc8",
+        "name": "Set Payload to Buffer",
+        "func": "msg.ip = msg.info.udpIP;  \nmsg.port = msg.info.udpPort;\n\nswitch(msg.info.protocollRevision)\n{\n    case \"02\":\n    var byte0 = \"24\";\n    break;\n    \n    case \"03\":\n        var byte0 = \"2C\";\n    break; \n    \n    default:\n    node.error(\"protocollRevision must be 02 or 03\");\n    break; \n}\n\nlet port = msg.info.bniPort[0]; //for testing only on Port is possible\nlet portModeDetails = msg.info.portModeDetails[0];\nlet portMode = msg.info.portMode[0];\n\nlet fehlendeBytes = ' 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00';\n// 30 '00' pakete\n\nlet complete_hex = byte0 + ' 00 ' + msg.info.protocollRevision + ' 0F ' +  port + ' ' + portModeDetails + ' ' + portMode + ' ' + msg.info.iolRevision + ' ' + msg.info.dsConfig + ' 00 00 00 ' + msg.info.inspectionLevel + fehlendeBytes;\n//Byte 9 .... fehlen\n\n\nvar string = complete_hex.replace(/\\s/g,'');\nmsg.payload = Buffer.from(string,\"hex\");\n\ndelete msg.info;\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 182.5,
+        "y": 109.25,
+        "wires": [
+            [
+                "370ee5e4.6f587a"
+            ]
+        ]
+    },
+    {
+        "id": "54e4a3fe.12823c",
+        "type": "subflow",
+        "name": "(old) GetMasterInfo",
+        "info": "",
+        "in": [
+            {
+                "x": 56.66665267944336,
+                "y": 58.11112403869629,
+                "wires": [
+                    {
+                        "id": "2f746230.af909e"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 342.22222900390625,
+                "y": 99.9999942779541,
+                "wires": [
+                    {
+                        "id": "2f746230.af909e",
+                        "port": 0
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "2f746230.af909e",
+        "type": "function",
+        "z": "54e4a3fe.12823c",
+        "name": "Set Payload to Buffer",
+        "func": "msg.ip = msg.info.udpIP;  \nmsg.port = msg.info.udpPort;\n\nlet complete_hex = '05 00 02 67 00';\n\nvar string = complete_hex.replace(/\\s/g,'');\nmsg.payload = Buffer.from(string,\"hex\");\n\ndelete msg.info;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 212.2222137451172,
+        "y": 57.777780532836914,
+        "wires": [
+            [
+                "632efd55.7c9c64"
+            ]
+        ]
+    },
+    {
+        "id": "632efd55.7c9c64",
+        "type": "udp out",
+        "z": "54e4a3fe.12823c",
+        "name": "",
+        "addr": "",
+        "iface": "",
+        "port": "",
+        "ipv": "udp4",
+        "outport": "",
+        "base64": false,
+        "multicast": "false",
+        "x": 420.2221984863281,
+        "y": 57.527788162231445,
+        "wires": []
+    },
+    {
+        "id": "c9334b9d.c32328",
+        "type": "subflow",
+        "name": "(old) ReadOutput",
+        "info": "",
+        "in": [
+            {
+                "x": 40,
+                "y": 60,
+                "wires": [
+                    {
+                        "id": "efd08c4c.1fc6"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 329.99999618530273,
+                "y": 118.88888931274414,
+                "wires": [
+                    {
+                        "id": "efd08c4c.1fc6",
+                        "port": 0
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "161a3dbd.626762",
+        "type": "udp out",
+        "z": "c9334b9d.c32328",
+        "name": "",
+        "addr": "",
+        "iface": "",
+        "port": "",
+        "ipv": "udp4",
+        "outport": "",
+        "base64": false,
+        "multicast": "false",
+        "x": 408.25,
+        "y": 71,
+        "wires": []
+    },
+    {
+        "id": "efd08c4c.1fc6",
+        "type": "function",
+        "z": "c9334b9d.c32328",
+        "name": "Set Payload to Buffer",
+        "func": "msg.ip = msg.info.udpIP;  \nmsg.port = msg.info.udpPort;\n\nlet complete_hex = '05 00 02 0D ' + msg.info.bniPort;\n\nvar string = complete_hex.replace(/\\s/g,'');\nmsg.payload = Buffer.from(string,\"hex\");\n\ndelete msg.info;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 194.25,
+        "y": 71.25,
+        "wires": [
+            [
+                "161a3dbd.626762"
+            ]
+        ]
+    },
+    {
+        "id": "4132346e.e02abc",
+        "type": "subflow",
+        "name": "(old) Write",
+        "info": "",
+        "in": [
+            {
+                "x": 52,
+                "y": 77,
+                "wires": [
+                    {
+                        "id": "fb4a0e2c.87a25"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 343.3333320617676,
+                "y": 118.88888359069824,
+                "wires": [
+                    {
+                        "id": "fb4a0e2c.87a25",
+                        "port": 0
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "ec38dd58.568a2",
+        "type": "udp out",
+        "z": "4132346e.e02abc",
+        "name": "",
+        "addr": "",
+        "iface": "",
+        "port": "",
+        "ipv": "udp4",
+        "outport": "",
+        "base64": false,
+        "multicast": "false",
+        "x": 435,
+        "y": 77,
+        "wires": []
+    },
+    {
+        "id": "fb4a0e2c.87a25",
+        "type": "function",
+        "z": "4132346e.e02abc",
+        "name": "Set Payload to Buffer",
+        "func": "msg.ip = msg.info.udpIP;  \nmsg.port = msg.info.udpPort;\n\n\n\n//join the objects of the data array\nlet data_hex = msg.info.data.join(' '); \n\nlet dataLength  = msg.info.data.length; \nlet lengthOfData = 5 + dataLength;\n//convert the number to a hex string\nvar lengthString = lengthOfData.toString(16); \n\n//formatt lengthString to 00 00 format\nif (lengthOfData <= 15)\n{\n    var formattedData = '0' + lengthOfData + ' 00';\n}\n\nelse if (lengthOfData >= 16 && lengthOfData <= 255)\n{\n    var formattedData = lengthOfData + ' 00';\n}\nelse if (lengthOfData >= 256 && lengthOfData <= 4095)\n{\n    let formattedLengthOfData_1 = lengthString.slice(0, 2);\n    let formattedLengthOfData_2 = lengthString.slice(2, 3);\n    var formattedData = formattedLengthOfData_1 + ' ' + ' 0' + formattedLengthOfData_2; \n}\nelse if (lengthOfData >= 4096 && lengthOfData <= 65535)\n{\n    let formattedLengthOfData_1 = lengthString.slice(0, 2);\n    let formattedLengthOfData_2 = lengthString.slice(2, 4);\n    var formattedData = formattedLengthOfData_1 + ' ' + formattedLengthOfData_2; \n}\nelse\n{\n    node.error(\"data array is to big\");\n}\n\nlet complete_hex = formattedData + ' 02 0B ' + msg.info.bniPort + ' ' + data_hex;\n\nvar string = complete_hex.replace(/\\s/g,'');\nmsg.payload = Buffer.from(string,\"hex\");\n\ndelete msg.info;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 203.3333282470703,
+        "y": 76.5555477142334,
+        "wires": [
+            [
+                "ec38dd58.568a2"
+            ]
+        ]
+    },
+    {
+        "id": "1d48003c.1958c",
+        "type": "subflow",
+        "name": "(old) Read",
+        "info": "udpIP: IP Adress from Profinet Master\nudpPort: Port of the ... 1999\nbniPort: Port wich will read out (FF for all Ports)",
+        "in": [
+            {
+                "x": 65,
+                "y": 102.50000190734863,
+                "wires": [
+                    {
+                        "id": "db4ad050.0e62e"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 359.99999713897705,
+                "y": 151.11110496520996,
+                "wires": [
+                    {
+                        "id": "db4ad050.0e62e",
+                        "port": 0
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "2a51842c.e2c41c",
+        "type": "udp out",
+        "z": "1d48003c.1958c",
+        "name": "",
+        "addr": "",
+        "iface": "",
+        "port": "",
+        "ipv": "udp4",
+        "outport": "",
+        "base64": false,
+        "multicast": "false",
+        "x": 425.75,
+        "y": 102.25,
+        "wires": []
+    },
+    {
+        "id": "db4ad050.0e62e",
+        "type": "function",
+        "z": "1d48003c.1958c",
+        "name": "Set Payload to Buffer",
+        "func": "msg.ip = msg.info.udpIP;  \nmsg.port = msg.info.udpPort;\n\nlet complete_hex = '05 00 02 0A ' + msg.info.bniPort;\n\nvar string = complete_hex.replace(/\\s/g,'');\nmsg.payload = Buffer.from(string,\"hex\");\n\ndelete msg.info;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 213.75,
+        "y": 102.5,
+        "wires": [
+            [
+                "2a51842c.e2c41c"
+            ]
+        ]
+    },
+    {
+        "id": "83bf5489.fdc9e8",
+        "type": "tab",
+        "label": "UDP",
+        "disabled": true,
+        "info": ""
+    },
+    {
+        "id": "a67683e8.8c5ef",
+        "type": "change",
+        "z": "83bf5489.fdc9e8",
+        "name": "configure Read",
+        "rules": [
+            {
+                "t": "set",
+                "p": "info",
+                "pt": "msg",
+                "to": "{\"udpIP\":\"192.168.0.15\",\"udpPort\":\"1999\",\"bniPort\":\"02\"}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 480,
+        "y": 1640,
+        "wires": [
+            [
+                "b454780b.0a7708"
+            ]
+        ]
+    },
+    {
+        "id": "4bc09106.af26e",
+        "type": "inject",
+        "z": "83bf5489.fdc9e8",
+        "name": "ReadProcessData",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 175.99994659423828,
+        "y": 1640.25,
+        "wires": [
+            [
+                "a67683e8.8c5ef"
+            ]
+        ]
+    },
+    {
+        "id": "b454780b.0a7708",
+        "type": "subflow:1d48003c.1958c",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "env": [],
+        "x": 813.0832214355469,
+        "y": 1640.1388702392578,
+        "wires": [
+            [
+                "85628b0e.c0fb58"
+            ]
+        ]
+    },
+    {
+        "id": "830fdcc7.3fa6",
+        "type": "change",
+        "z": "83bf5489.fdc9e8",
+        "name": "configure Write",
+        "rules": [
+            {
+                "t": "set",
+                "p": "info",
+                "pt": "msg",
+                "to": "{\"udpIP\":\"192.168.0.15\",\"udpPort\":\"1999\",\"bniPort\":\"01\",\"data\":[\"01\",\"00\"]}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 477.5832748413086,
+        "y": 1737.3611102104187,
+        "wires": [
+            [
+                "8e0253c8.3ff58"
+            ]
+        ]
+    },
+    {
+        "id": "d0761600.ce1a28",
+        "type": "inject",
+        "z": "83bf5489.fdc9e8",
+        "name": "WriteProcessData",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 175.0276870727539,
+        "y": 1737.611111164093,
+        "wires": [
+            [
+                "830fdcc7.3fa6"
+            ]
+        ]
+    },
+    {
+        "id": "8e0253c8.3ff58",
+        "type": "subflow:4132346e.e02abc",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "x": 811.138786315918,
+        "y": 1737.4722113609314,
+        "wires": [
+            [
+                "a0d21bfb.b00cd8"
+            ]
+        ]
+    },
+    {
+        "id": "a08072b6.f2d3c",
+        "type": "change",
+        "z": "83bf5489.fdc9e8",
+        "name": "configure ReadOutput",
+        "rules": [
+            {
+                "t": "set",
+                "p": "info",
+                "pt": "msg",
+                "to": "{\"udpIP\":\"192.168.0.15\",\"udpPort\":\"1999\",\"bniPort\":\"FF\"}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 493.9166488647461,
+        "y": 1828.8055491447449,
+        "wires": [
+            [
+                "1b60521.20fa5ae"
+            ]
+        ]
+    },
+    {
+        "id": "fd09007.6ce08",
+        "type": "inject",
+        "z": "83bf5489.fdc9e8",
+        "name": "ReadProcessDataOutputs",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 192.9166030883789,
+        "y": 1829.0555481910706,
+        "wires": [
+            [
+                "a08072b6.f2d3c"
+            ]
+        ]
+    },
+    {
+        "id": "1b60521.20fa5ae",
+        "type": "subflow:c9334b9d.c32328",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "x": 831.3610134124756,
+        "y": 1829.0277490615845,
+        "wires": [
+            [
+                "1d655deb.83ac22"
+            ]
+        ]
+    },
+    {
+        "id": "53c3af43.24b2e",
+        "type": "function",
+        "z": "83bf5489.fdc9e8",
+        "name": "transform return",
+        "func": "//Original Object from BNI;\nmsg.returnObject = msg.payload;\n\n//Object to tidy Hex string\nmsg.response = msg.payload.toString('hex').match(/.{2}/g).join(' ');\nmsg.bniPort = msg.returnObject[4];\n\n//which Command was returned;\nmsg.command = msg.returnObject[3];\nmsg.protocolRevision = msg.returnObject[2];\nmsg.dataLength = undefined;   \n\nswitch ( msg.command )\n{\n\ncase 6: //command 6 == Parameter Read Error\n    \n    msg.errorCode = msg.returnObject[5];\n    msg.additinalCode = msg.returnObject[6];\n    msg.payload = \"Read Parameter failed! Error Code: \" + msg.errorCode.toString(16); \n    break;\n    \n\ncase 7: //command 7 == Parameter Write Error\n\n    msg.errorCode = msg.returnObject[5];\n    msg.additinalCode = msg.returnObject[6];\n    msg.payload = \"Write Parameter failed! Error Code: \" + msg.errorCode.toString(16); \n    break;\n    \ncase 8: //command 3 == Parameter Write\n\n    msg.payload = \"Write Parameter complete\";\n    break;\n    \ncase 9: //command 9 == Parameter Read\n\n    msg.dataLength = msg.returnObject[5];\n    \n    \n    var data_array = [];\n    var dataString_array = []\n    for(i = 0; i <= msg.dataLength -1; i++)\n    {\n        data_array[i] = msg.returnObject[6 + i];\n        dataString_array[i] = data_array[i].toString(16); //to show Data in Dashboard \n    }\n    msg.data = data_array;\n    \n    msg.parameterData = dataString_array.join(' ');\n    \n    msg.payload = \"Read Parameter complete\";\n    break;\n\ncase 10: //command 10 == ReadProcessdata\n\n    if ( msg.bniPort == 255 )\n    {\n        msg.payload = \"Read Input Data complete\"; \n        msg.portData = [];\n        var dataLength = (msg.returnObject[0] | ( msg.returnObject[1] << 8 ))-5; \n        var offset = 5;\n        var itemLength;\n        \n        msg.dataLength = dataLength; \n\n        while ( dataLength > 0 )\n        {\n            itemLength = msg.returnObject[ offset ];\n            \n            if ( itemLength + 1 > dataLength )\n            {\n                // Error - data says it's longer than the buffer.\n                node.error(\"longer than the buffer\");\n                break;\n            }\n            \n            if ( itemLength < 1 )\n            {\n                // Error - invalid data length\n                node.error(\"invalid data length\");\n                break;\n            }\n\n            msg.portData.push({\n                \"data\":    msg.returnObject.slice( offset + 1, offset + itemLength ),\n                \"PDvalid\": msg.returnObject[ offset + itemLength ]\n            });\n\n            offset += itemLength + 1;\n            dataLength -= itemLength + 1;\n        }\n    }\n    else\n    {\n        var dataLength = (msg.returnObject[0] | ( msg.returnObject[1] << 8 ))-6;\n        var offset = 5;\n        var itemLength;\n        \n        msg.dataLength = dataLength;\n        \n        var data_array = [];\n        for (i = 0; i <= dataLength -1; i++)\n        {\n            data_array[i] = msg.returnObject[offset + i];\n        }\n        msg.data = data_array;\n        msg.valid = msg.returnObject[offset + dataLength];\n        \n        delete msg.payload;\n    }\n    //msg.payload = \"Read Input Data complete\"; \n    break;\n\n\n\ncase 11: //command 11 == WriteProcessData\n\n    if ( msg.bniPort == 255 )\n    {\n        msg.portData = [];\n        var dataLength = (msg.returnObject[0] | ( msg.returnObject[1] << 8 ))-5; \n        var offset = 5;\n        var itemLength;\n        \n        while ( dataLength > 0 )\n        {\n            itemLength = msg.returnObject[ offset ];\n            \n            if ( itemLength + 1 > dataLength )\n            {\n                // Error - data says it's longer than the buffer.\n                node.error(\"longer than the buffer\");\n                break;\n            }\n            \n            if ( itemLength < 1 )\n            {\n                // Error - invalid data length\n                node.error(\"invalid data length\");\n                break;\n            }\n\n            msg.portData.push({\n                \"data\":    msg.returnObject.slice( offset + 1, offset + itemLength ),\n                \"PDvalid\": msg.returnObject[ offset + itemLength ]\n            });\n\n            offset += itemLength + 1;\n            dataLength -= itemLength + 1;\n        }\n    }\n    else\n    {\n        msg.dataLength = (msg.returnObject[0] | ( msg.returnObject[1] << 8 ))-6;\n    }\n    msg.payload = \"Write Data complete\";\n    break;\n    \n\ncase 13: //comand 13 == ReadProcessDataOutputs\n\n    if ( msg.bniPort == 255 )\n    {\n        msg.payload = \"Read Output Data complete\";\n        msg.portData = [];\n        //8 = Number of Ports?\n        var dataLength = (msg.returnObject[0] | ( msg.returnObject[1] << 8 ))-5; \n        msg.dataLength = dataLength;\n        var offset = 5;\n        \n        while ( dataLength> 0 )\n        {\n            var itemLength = msg.returnObject[ offset ];\n            \n            if ( itemLength + 1 > dataLength )\n            {\n                // Error - data says it's longer than the buffer.\n                node.error(\"longer than the buffer\");\n                break;\n            }\n            \n            if ( itemLength < 1 )\n            {\n                // Error - invalid data length\n                node.error(\"invalid data length\");\n                break;\n            }\n\n            msg.portData.push({\n                \"data\": msg.returnObject.slice( offset + 1, offset + itemLength +1),\n                \"dataLength\": msg.returnObject[offset],\n            }); \n\n            offset += itemLength +1;\n            dataLength -= itemLength +1;\n            }\n    }\n    else\n    {\n        msg.dataLength = msg.returnObject[0] - 5;  //korrekte Datenlänge\n        var dataLength = msg.dataLength;\n        var offset = 5;\n        \n        var data_array = [];\n        for (i = 0; i <= dataLength -1; i++)\n        {\n            data_array[i] = msg.returnObject[offset + i];\n        }\n        msg.data = data_array;\n        \n        delete msg.payload;\n    }\n    //msg.payload = \"Read Output Data complete\";\n    break;\n    \ncase 14: //command 14 == SM_GetMode\n    //extract the infos\n    msg.portMode = msg.returnObject[6];\n    msg.masterCycle = msg.returnObject[7];\n    msg.comMode = msg.returnObject[8];\n    msg.sensorConnected = msg.returnObject[9]; //00 = NC | FF = Operate | 40 = wrong Sensor | 80 = Preoperate\n    \n    msg.vendorID_msb = msg.returnObject[10];\n    msg.vendorID_lsb = msg.returnObject[11];\n    \n    let vendorID_msb14 = msg.vendorID_msb * 0x100;\n    let vendorID_lsb14 = msg.vendorID_lsb;\n    let vendorID_complete14 = vendorID_msb14 + vendorID_lsb14;\n    \n    msg.vendorID = vendorID_complete14.toString();\n\n    msg.deviceID_msb = msg.returnObject[12];\n    msg.deviceID_0 = msg.returnObject[13];\n    msg.deviceID_lsb = msg.returnObject[14];\n    \n    let deviceID_msb14 = msg.deviceID_msb * 0x10000;\n    let deviceID_14 = msg.deviceID_0 * 0x100;\n    let deviceID_lsb14 = msg.deviceID_lsb;\n    let deviceID_complete14 = deviceID_msb14 + deviceID_14 + deviceID_lsb14;\n    \n    msg.deviceID = deviceID_complete14.toString();\n    \n    msg.payload = \"Get Mode complete\";\n    break;\n\ncase 15 || 1: //all Standard Confirmation || case 15 == SetPortConfig | case 1 == SM_SetCommand| \n    //msg.result 0=succes | 1=state conflict | 8=abort | ..... page 7 Interface Protocoll\n    msg.result = msg.returnObject[5]; \n    \n    msg.payload = \"Standard Confirmation\";\n    break;\n\ncase 16: //command 16 == GetPortConfig\n\n    //extract the infos\n    msg.result = msg.returnObject[5];\n    msg.portModeDetails = msg.returnObject[6];\n    \n    switch (msg.returnObject[7]) \n    {\n    case 0:\n        msg.portMode = \"Not Connected\";\n        break;\n    \n    case 1:\n        msg.portMode = \"IO-Link (Preoperate)\"; \n        break;\n    \n    case 3:\n        msg.portMode = \"Digital Input\";\n        break;\n    \n    case 4:\n        msg.portMode = \"Digital Output\";\n        break;\n    \n    case 5:\n        msg.portMode = \"IN OUT\";\n        break;\n    \n    case 10:\n        msg.portMode = \"IO-Link (Preoperate Fallback)\";\n        break;\n    \n    case 11:\n        msg.portMode = \"IO-Link (Operate Fallback)\";\n        break;\n    \n    case 12:\n        msg.portMode = \"IO-Link (Operate)\";\n        break;\n    \n    case 13:\n        msg.portMode = \"IO-Link (Fallback)\";\n        break;\n    \n    case 16:\n        msg.portMode = \"Pin 2 Normal Input\";\n        break;\n        \n    case 32:\n        msg.portMode = \"Pin 2 Normal Output\";\n        break;\n        \n    case 48:\n        msg.portMode = \"Pin 2 Diagnostic Input\";\n        break;\n        \n    case 64:\n        msg.portMode = \"Pin 2 Inverted Input\";\n        break;\n    \n    case 240:\n        msg.portMode = \"Not change the mode Pin 2\";\n        break;\n    \n    default:\n    break;\n    }\n    //for Dashboard in hex format\n    msg.portModeHex = msg.portMode.toString(16);\n    \n    msg.iolRevision = msg.returnObject[8]; \n    msg.dsConfig = msg.returnObject[9];\n    msg.inspectionLevel = msg.returnObject[13];\n    \n    msg.vendorID_msb = msg.returnObject[14];\n    msg.vendorID_lsb = msg.returnObject[15];\n    //convert the hex number into the rigth \"level\"\n    let vendorID_msb16 = msg.vendorID_msb * 0x100; \n    let vendorID_lsb16 = msg.vendorID_lsb;\n    let vendorID_complete16 = vendorID_msb16 + vendorID_lsb16; //calculate the two hex numbers together\n    \n    msg.vendorID = vendorID_complete16.toString(); \n\n    msg.deviceID_msb = msg.returnObject[16];\n    msg.deviceID_0 = msg.returnObject[17];\n    msg.deviceID_lsb = msg.returnObject[18];\n    \n    let deviceID_msb16 = msg.deviceID_msb * 0x10000;\n    let deviceID_16 = msg.deviceID_0 * 0x100;\n    let deviceID_lsb16 = msg.deviceID_lsb;\n    let deviceID_complete16 = deviceID_msb16 + deviceID_16 + deviceID_lsb16;\n    \n    msg.deviceID = deviceID_complete16.toString();\n    \n    msg.payload = \"Get Port Config complete\";\n    break;\n    \ncase 17: //command 17 == GetMasterConfig\n\n    // delete the not existing BNIPort\n    delete msg.bniPort;\n    \n    //extract the infos\n    msg.result = msg.returnObject[5];\n    \n    if(msg.result === 0) //result 0 === success\n    {\n    msg.moduleID = msg.returnObject[6];\n    msg.nbOfAllocatedPorts = msg.returnObject[7];\n    }\n    \n    msg.payload = \"Get Master Config complete\";\n    break;\n\ncase 103: //command 103 == GetMasterInfo\n    \n    // delete the not existing BNIPort\n    delete msg.bniPort;\n    \n    //extract the infos \n    let masterMajorRevision = String.fromCharCode(msg.returnObject[5]);\n    let masterMinorRevision = String.fromCharCode(msg.returnObject[6]);\n    msg.masterRevision = masterMajorRevision + '.' + masterMinorRevision;\n    \n    msg.masterBuildRevision = String.fromCharCode(msg.returnObject[7]);\n    \n    msg.vendorID_msb = msg.returnObject[11];\n    msg.vendorID_lsb = msg.returnObject[12];\n    \n    let vendorID_msb103 = msg.vendorID_msb * 0x100;\n    let vendorID_lsb103 = msg.vendorID_lsb;\n    let vendorID_complete103 = vendorID_msb103 + vendorID_lsb103;\n    \n    msg.vendorID = vendorID_complete103.toString();\n    \n    msg.deviceID_msb = msg.returnObject[13];\n    msg.deviceID_0 = msg.returnObject[14];\n    msg.deviceID_lsb = msg.returnObject[15];\n    \n    let deviceID_msb103 = msg.deviceID_msb * 0x10000;\n    let deviceID_103 = msg.deviceID_0 * 0x100;\n    let deviceID_lsb103 = msg.deviceID_lsb;\n    let deviceID_complete103 = deviceID_msb103 + deviceID_103 + deviceID_lsb103;\n    \n    msg.deviceID = deviceID_complete103.toString();\n    \n    let iolMasterStackMajorRevision = String.fromCharCode(msg.returnObject[16]);\n    let iolMasterStackMinorRevision = String.fromCharCode(msg.returnObject[17]);\n    msg.iolMasterStackRevision = iolMasterStackMajorRevision + '.' + iolMasterStackMinorRevision;\n    \n    msg.iolMasterStackBuildRevision = String.fromCharCode(msg.returnObject[18]);\n    \n    msg.payload = \"Get Master Info complete\";\n    break;\n\ndefault:\n    return;\n    break;\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 309.00003814697266,
+        "y": 315.97222328186035,
+        "wires": [
+            [
+                "d7de9c43.e13fd",
+                "f2120cb6.fa776",
+                "c1e610cf.3eae5",
+                "638cb089.63559",
+                "5d8d3381.96d71c",
+                "c766c2c5.fc503",
+                "106aa627.9d454a",
+                "96e3b72d.12e278",
+                "3dc85823.ee8278",
+                "5bc7afee.9b268",
+                "e21bb806.999d88"
+            ]
+        ]
+    },
+    {
+        "id": "a018b927.92a818",
+        "type": "udp in",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "iface": "",
+        "port": "2000",
+        "ipv": "udp4",
+        "multicast": "false",
+        "group": "",
+        "datatype": "buffer",
+        "x": 119,
+        "y": 316.08330726623535,
+        "wires": [
+            [
+                "d2bc7ef6.ce442",
+                "53c3af43.24b2e"
+            ]
+        ]
+    },
+    {
+        "id": "d2bc7ef6.ce442",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "udp Antwort",
+        "active": true,
+        "console": "false",
+        "complete": "true",
+        "x": 270,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "d7de9c43.e13fd",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "Verarbeitet",
+        "active": true,
+        "console": "false",
+        "complete": "true",
+        "x": 528.4444274902344,
+        "y": 430.41650390625,
+        "wires": []
+    },
+    {
+        "id": "3b51616e.88d8fe",
+        "type": "change",
+        "z": "83bf5489.fdc9e8",
+        "name": "configure GetMasterInfo",
+        "rules": [
+            {
+                "t": "set",
+                "p": "info",
+                "pt": "msg",
+                "to": "{\"udpIP\":\"192.168.0.15\",\"udpPort\":\"1999\"}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 502.58324432373047,
+        "y": 1933.3610892295837,
+        "wires": [
+            [
+                "46de8474.22f99c"
+            ]
+        ]
+    },
+    {
+        "id": "32e9bc28.796b64",
+        "type": "inject",
+        "z": "83bf5489.fdc9e8",
+        "name": "GetMasterInfo",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 153.58319854736328,
+        "y": 1933.6110892295837,
+        "wires": [
+            [
+                "3b51616e.88d8fe"
+            ]
+        ]
+    },
+    {
+        "id": "46de8474.22f99c",
+        "type": "subflow:54e4a3fe.12823c",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "x": 833.4721374511719,
+        "y": 1933.4722356796265,
+        "wires": [
+            [
+                "eefc8c51.ce65b"
+            ]
+        ]
+    },
+    {
+        "id": "1f44dff0.414ff",
+        "type": "change",
+        "z": "83bf5489.fdc9e8",
+        "name": "configure SM_GetMasterConfig",
+        "rules": [
+            {
+                "t": "set",
+                "p": "info",
+                "pt": "msg",
+                "to": "{\"udpIP\":\"192.168.0.15\",\"udpPort\":\"1999\"}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 519.8055419921875,
+        "y": 2312.2499051094055,
+        "wires": [
+            [
+                "a9a8fddb.dfc0b"
+            ]
+        ]
+    },
+    {
+        "id": "c63e23d3.601da",
+        "type": "inject",
+        "z": "83bf5489.fdc9e8",
+        "name": "SM_GetMasterConfig",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 185.58328247070312,
+        "y": 2312.8332324028015,
+        "wires": [
+            [
+                "1f44dff0.414ff"
+            ]
+        ]
+    },
+    {
+        "id": "2ed566f6.6de29a",
+        "type": "change",
+        "z": "83bf5489.fdc9e8",
+        "name": "configure SM_SetPortConfig",
+        "rules": [
+            {
+                "t": "set",
+                "p": "info",
+                "pt": "msg",
+                "to": "{\"udpIP\":\"192.168.0.15\",\"udpPort\":\"1999\",\"protocollRevision\":\"02\",\"bniPort\":[\"01\"],\"portModeDetails\":[\"00\"],\"portMode\":[\"0C\"],\"vendorID_msb\":\"00\",\"vendorID_lsb\":\"00\",\"deviceID_msb\":\"00\",\"deviceID_0\":\"00\",\"deviceID_lsb\":\"00\",\"iolRevision\":\"11\",\"dsConfig\":\"00\",\"inspectionLevel\":\"00\"}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 514.805549621582,
+        "y": 2102.361090183258,
+        "wires": [
+            [
+                "7a480a77.e53e74"
+            ]
+        ]
+    },
+    {
+        "id": "7cda122c.0a740c",
+        "type": "inject",
+        "z": "83bf5489.fdc9e8",
+        "name": "SM_SetPortConfig",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 179.3610610961914,
+        "y": 2102.6110968589783,
+        "wires": [
+            [
+                "2ed566f6.6de29a"
+            ]
+        ]
+    },
+    {
+        "id": "1403647f.e1834c",
+        "type": "change",
+        "z": "83bf5489.fdc9e8",
+        "name": "configure GetPortConfig",
+        "rules": [
+            {
+                "t": "set",
+                "p": "info",
+                "pt": "msg",
+                "to": "{\"udpIP\":\"192.168.0.15\",\"udpPort\":\"1999\",\"protocollRevision\":\"02\",\"bniPort\":\"02\"}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 501.38884353637695,
+        "y": 1994.5555143356323,
+        "wires": [
+            [
+                "538557c6.ce82a8"
+            ]
+        ]
+    },
+    {
+        "id": "45fdea5b.af2714",
+        "type": "inject",
+        "z": "83bf5489.fdc9e8",
+        "name": "GetPortConfig",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 154.6943588256836,
+        "y": 1995.0554904937744,
+        "wires": [
+            [
+                "1403647f.e1834c"
+            ]
+        ]
+    },
+    {
+        "id": "7a480a77.e53e74",
+        "type": "subflow:dec7846c.c8bfc8",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "x": 856.5832386016846,
+        "y": 2102.9166469573975,
+        "wires": [
+            [
+                "fea3a450.6c04d8"
+            ]
+        ]
+    },
+    {
+        "id": "538557c6.ce82a8",
+        "type": "subflow:b04d8755.b5f488",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "x": 835.2499256134033,
+        "y": 1994.6944327354431,
+        "wires": [
+            [
+                "9df8e154.dc533"
+            ]
+        ]
+    },
+    {
+        "id": "d90245fa.b6d598",
+        "type": "change",
+        "z": "83bf5489.fdc9e8",
+        "name": "configure SM_GetMode",
+        "rules": [
+            {
+                "t": "set",
+                "p": "info",
+                "pt": "msg",
+                "to": "{\"udpIP\":\"192.168.0.15\",\"udpPort\":\"1999\",\"bniPort\":[\"01\"]}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 502.0277862548828,
+        "y": 2212.916645526886,
+        "wires": [
+            [
+                "c80ed659.87bf98"
+            ]
+        ]
+    },
+    {
+        "id": "f7b2d695.9a1158",
+        "type": "inject",
+        "z": "83bf5489.fdc9e8",
+        "name": "SM_GetMode",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 156.5832977294922,
+        "y": 2213.166652202606,
+        "wires": [
+            [
+                "d90245fa.b6d598"
+            ]
+        ]
+    },
+    {
+        "id": "c80ed659.87bf98",
+        "type": "subflow:89f7f4e0.ff6408",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "x": 838.5833530426025,
+        "y": 2212.8054933547974,
+        "wires": [
+            [
+                "331a376b.0f1348"
+            ]
+        ]
+    },
+    {
+        "id": "98af8b89.aa4c78",
+        "type": "change",
+        "z": "83bf5489.fdc9e8",
+        "name": "(all Ports) configure SM_SetPortConfig",
+        "rules": [
+            {
+                "t": "set",
+                "p": "info",
+                "pt": "msg",
+                "to": "{\"udpIP\":\"192.168.0.15\",\"udpPort\":\"1999\",\"ports\":[{\"portNumber\":\"00\",\"transmit\":\"1\",\"protocollRevision\":\"03\",\"portModeDetails\":\"00\",\"portMode\":\"03\",\"vendorID_msb\":\"03\",\"vendorID_lsb\":\"78\",\"deviceID_msb\":\"51\",\"deviceID_0\":\"58\",\"deviceID_lsb\":\"16\",\"iolRevision\":\"11\",\"dsConfig\":\"00\",\"inspectionLevel\":\"00\"},{\"portNumber\":\"01\",\"transmit\":\"1\",\"protocollRevision\":\"02\",\"portModeDetails\":\"00\",\"portMode\":\"0C\",\"vendorID_msb\":\"03\",\"vendorID_lsb\":\"78\",\"deviceID_msb\":\"51\",\"deviceID_0\":\"58\",\"deviceID_lsb\":\"16\",\"iolRevision\":\"11\",\"dsConfig\":\"00\",\"inspectionLevel\":\"00\"},{\"portNumber\":\"02\",\"transmit\":\"1\",\"protocollRevision\":\"02\",\"portModeDetails\":\"00\",\"portMode\":\"0C\",\"vendorID_msb\":\"00\",\"vendorID_lsb\":\"00\",\"deviceID_msb\":\"00\",\"deviceID_0\":\"00\",\"deviceID_lsb\":\"00\",\"iolRevision\":\"11\",\"dsConfig\":\"00\",\"inspectionLevel\":\"00\"},{\"portNumber\":\"03\",\"transmit\":\"1\",\"protocollRevision\":\"02\",\"portModeDetails\":\"00\",\"portMode\":\"00\",\"vendorID_msb\":\"00\",\"vendorID_lsb\":\"00\",\"deviceID_msb\":\"00\",\"deviceID_0\":\"00\",\"deviceID_lsb\":\"00\",\"iolRevision\":\"00\",\"dsConfig\":\"00\",\"inspectionLevel\":\"00\"}]}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 544.0277481079102,
+        "y": 2138.8055453300476,
+        "wires": [
+            [
+                "af1f4acf.4f8f78"
+            ]
+        ]
+    },
+    {
+        "id": "d557b3fd.8ca0d",
+        "type": "inject",
+        "z": "83bf5489.fdc9e8",
+        "name": "(all Ports) SM_SetPortConfig",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 208.58325958251953,
+        "y": 2139.055552005768,
+        "wires": [
+            [
+                "98af8b89.aa4c78"
+            ]
+        ]
+    },
+    {
+        "id": "af1f4acf.4f8f78",
+        "type": "subflow:ef6007e5.47b928",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "x": 886.8054447174072,
+        "y": 2138.8054752349854,
+        "wires": [
+            [
+                "ee6300aa.08a43"
+            ]
+        ]
+    },
+    {
+        "id": "55efa6cd.863388",
+        "type": "change",
+        "z": "83bf5489.fdc9e8",
+        "name": "(allPorts) configure Write",
+        "rules": [
+            {
+                "t": "set",
+                "p": "info",
+                "pt": "msg",
+                "to": "{\"udpIP\":\"192.168.0.15\",\"udpPort\":\"1999\",\"ports\":[{\"portNumber\":\"00\",\"transmit\":\"0\",\"data\":[\"00\"]},{\"portNumber\":\"01\",\"transmit\":\"1\",\"data\":[\"06\",\"00\"]},{\"portNumber\":\"02\",\"transmit\":\"0\",\"data\":[\"00\"]},{\"portNumber\":\"03\",\"transmit\":\"0\",\"data\":[\"00\"]}]}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 504.4721908569336,
+        "y": 1775.0277643203735,
+        "wires": [
+            [
+                "68b6489.d1b46b8"
+            ]
+        ]
+    },
+    {
+        "id": "247cc4eb.ccecac",
+        "type": "inject",
+        "z": "83bf5489.fdc9e8",
+        "name": "(allPorts) WriteProcessData",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 204.13882446289062,
+        "y": 1775.1666707992554,
+        "wires": [
+            [
+                "55efa6cd.863388"
+            ]
+        ]
+    },
+    {
+        "id": "68b6489.d1b46b8",
+        "type": "subflow:44f06f61.17191",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "x": 880.8054485321045,
+        "y": 1774.8055424690247,
+        "wires": [
+            [
+                "68fc63ce.11ec6c"
+            ]
+        ]
+    },
+    {
+        "id": "2a334968.0736b6",
+        "type": "change",
+        "z": "83bf5489.fdc9e8",
+        "name": "(all Ports) configure GetPortConfig",
+        "rules": [
+            {
+                "t": "set",
+                "p": "info",
+                "pt": "msg",
+                "to": "{\"udpIP\":\"192.168.0.15\",\"udpPort\":\"1999\",\"ports\":[{\"portNumber\":\"00\",\"transmit\":\"1\",\"protocollRevision\":\"02\"},{\"portNumber\":\"01\",\"transmit\":\"1\",\"protocollRevision\":\"02\"},{\"portNumber\":\"02\",\"transmit\":\"0\",\"protocollRevision\":\"02\"},{\"portNumber\":\"03\",\"transmit\":\"1\",\"protocollRevision\":\"03\"}]}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 533.1388168334961,
+        "y": 2032.6944479942322,
+        "wires": [
+            [
+                "71dc4e67.5cff8"
+            ]
+        ]
+    },
+    {
+        "id": "4b009b3e.8c0064",
+        "type": "inject",
+        "z": "83bf5489.fdc9e8",
+        "name": "(all Ports) GetPortConfig",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 194.80548858642578,
+        "y": 2032.5833296775818,
+        "wires": [
+            [
+                "2a334968.0736b6"
+            ]
+        ]
+    },
+    {
+        "id": "71dc4e67.5cff8",
+        "type": "subflow:947e710c.00b14",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "x": 876.4721546173096,
+        "y": 2033.2500143051147,
+        "wires": [
+            [
+                "9275395.b9278c8"
+            ]
+        ]
+    },
+    {
+        "id": "447573c3.aa9b5c",
+        "type": "inject",
+        "z": "83bf5489.fdc9e8",
+        "name": "(all Ports) ReadProcessData",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 204.58325958251953,
+        "y": 1676.1388792991638,
+        "wires": [
+            [
+                "103da469.43388c"
+            ]
+        ]
+    },
+    {
+        "id": "103da469.43388c",
+        "type": "change",
+        "z": "83bf5489.fdc9e8",
+        "name": "(all Ports) configure Read",
+        "rules": [
+            {
+                "t": "set",
+                "p": "info",
+                "pt": "msg",
+                "to": "{\"udpIP\":\"192.168.0.15\",\"udpPort\":\"1999\",\"ports\":[{\"portNumber\":\"00\",\"transmit\":\"1\"},{\"portNumber\":\"01\",\"transmit\":\"0\"},{\"portNumber\":\"02\",\"transmit\":\"1\"},{\"portNumber\":\"03\",\"transmit\":\"0\"}]}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 510.9166488647461,
+        "y": 1675.8888773918152,
+        "wires": [
+            [
+                "2ce633ba.7d501c"
+            ]
+        ]
+    },
+    {
+        "id": "2ce633ba.7d501c",
+        "type": "subflow:79c45362.c5328c",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "x": 882.361047744751,
+        "y": 1676.0277528762817,
+        "wires": [
+            [
+                "c60d6c51.599fd"
+            ]
+        ]
+    },
+    {
+        "id": "b9af21c.108d2e",
+        "type": "change",
+        "z": "83bf5489.fdc9e8",
+        "name": "(all Ports) configure SM_GetMode",
+        "rules": [
+            {
+                "t": "set",
+                "p": "info",
+                "pt": "msg",
+                "to": "{\"udpIP\":\"192.168.0.15\",\"udpPort\":\"1999\",\"ports\":[{\"portNumber\":\"00\",\"transmit\":\"1\"},{\"portNumber\":\"01\",\"transmit\":\"0\"},{\"portNumber\":\"02\",\"transmit\":\"1\"},{\"portNumber\":\"03\",\"transmit\":\"0\"}]}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 530.6944274902344,
+        "y": 2250.583329677582,
+        "wires": [
+            [
+                "b46d3d1a.18985"
+            ]
+        ]
+    },
+    {
+        "id": "2e428555.0c3fea",
+        "type": "inject",
+        "z": "83bf5489.fdc9e8",
+        "name": "(all Ports) SM_GetMode",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 185.24993896484375,
+        "y": 2250.833336353302,
+        "wires": [
+            [
+                "b9af21c.108d2e"
+            ]
+        ]
+    },
+    {
+        "id": "b46d3d1a.18985",
+        "type": "subflow:279a839a.41d1fc",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "x": 868.5832233428955,
+        "y": 2250.583342552185,
+        "wires": [
+            [
+                "5d779156.ca529"
+            ]
+        ]
+    },
+    {
+        "id": "cfd99a94.927f28",
+        "type": "change",
+        "z": "83bf5489.fdc9e8",
+        "name": "(all Ports) configure ReadOutput",
+        "rules": [
+            {
+                "t": "set",
+                "p": "info",
+                "pt": "msg",
+                "to": "{\"udpIP\":\"192.168.0.15\",\"udpPort\":\"1999\",\"ports\":[{\"portNumber\":\"00\",\"transmit\":\"0\"},{\"portNumber\":\"01\",\"transmit\":\"1\"},{\"portNumber\":\"02\",\"transmit\":\"0\"},{\"portNumber\":\"03\",\"transmit\":\"0\"}]}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 522.9166412353516,
+        "y": 1868.361098766327,
+        "wires": [
+            [
+                "aeaea432.a0c438"
+            ]
+        ]
+    },
+    {
+        "id": "74047c59.057914",
+        "type": "inject",
+        "z": "83bf5489.fdc9e8",
+        "name": "(all Ports) ReadProcessDataOutputs",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 221.91659545898438,
+        "y": 1868.6110978126526,
+        "wires": [
+            [
+                "cfd99a94.927f28"
+            ]
+        ]
+    },
+    {
+        "id": "aeaea432.a0c438",
+        "type": "subflow:bdb9ab3.5b80258",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "x": 901.8054904937744,
+        "y": 1868.249960899353,
+        "wires": [
+            [
+                "c50aacde.79777"
+            ]
+        ]
+    },
+    {
+        "id": "a9a8fddb.dfc0b",
+        "type": "subflow:425f4b64.341834",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "x": 869.2499141693115,
+        "y": 2311.6943922042847,
+        "wires": [
+            [
+                "3f8b00f6.b58c1"
+            ]
+        ]
+    },
+    {
+        "id": "85628b0e.c0fb58",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 1142.9166469573975,
+        "y": 1639.583309173584,
+        "wires": []
+    },
+    {
+        "id": "c60d6c51.599fd",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 1142.9165287017822,
+        "y": 1676.694416999817,
+        "wires": []
+    },
+    {
+        "id": "68fc63ce.11ec6c",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 1142.9165287017822,
+        "y": 1774.8055238723755,
+        "wires": []
+    },
+    {
+        "id": "a0d21bfb.b00cd8",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 1142.9166469573975,
+        "y": 1736.6944160461426,
+        "wires": []
+    },
+    {
+        "id": "c50aacde.79777",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 1145.1388187408447,
+        "y": 1868.249966621399,
+        "wires": []
+    },
+    {
+        "id": "1d655deb.83ac22",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 1145.13893699646,
+        "y": 1829.138858795166,
+        "wires": []
+    },
+    {
+        "id": "9275395.b9278c8",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 1140.6943607330322,
+        "y": 2033.0277376174927,
+        "wires": []
+    },
+    {
+        "id": "9df8e154.dc533",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 1140.6944789886475,
+        "y": 1994.9166297912598,
+        "wires": []
+    },
+    {
+        "id": "ee6300aa.08a43",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 1138.472131729126,
+        "y": 2138.6943941116333,
+        "wires": []
+    },
+    {
+        "id": "fea3a450.6c04d8",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 1138.4722499847412,
+        "y": 2103.5832862854004,
+        "wires": []
+    },
+    {
+        "id": "5d779156.ca529",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 1138.472131729126,
+        "y": 2250.6943941116333,
+        "wires": []
+    },
+    {
+        "id": "331a376b.0f1348",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 1138.4722499847412,
+        "y": 2213.5832862854004,
+        "wires": []
+    },
+    {
+        "id": "eefc8c51.ce65b",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 1144.027666091919,
+        "y": 1933.2499732971191,
+        "wires": []
+    },
+    {
+        "id": "3f8b00f6.b58c1",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 1136.0278148651123,
+        "y": 2311.3610649108887,
+        "wires": []
+    },
+    {
+        "id": "5bc7afee.9b268",
+        "type": "ui_toast",
+        "z": "83bf5489.fdc9e8",
+        "position": "bottom left",
+        "displayTime": "5",
+        "highlight": "",
+        "outputs": 0,
+        "ok": "OK",
+        "cancel": "",
+        "topic": "",
+        "name": "msg return info",
+        "x": 537.8610534667969,
+        "y": 467.77783203125,
+        "wires": []
+    },
+    {
+        "id": "f2120cb6.fa776",
+        "type": "ui_text",
+        "z": "83bf5489.fdc9e8",
+        "group": "bdc8583d.d1cf18",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Master Revision:",
+        "format": "{{msg.masterRevision}}",
+        "layout": "row-spread",
+        "x": 550,
+        "y": 150,
+        "wires": []
+    },
+    {
+        "id": "3083a48c.34807c",
+        "type": "ui_text",
+        "z": "83bf5489.fdc9e8",
+        "group": "9f0c03e8.ae32e",
+        "order": 8,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Data (of last choosen Port):",
+        "format": "Port {{msg.bniPort}}: {{msg.payload}} ",
+        "layout": "col-center",
+        "x": 730,
+        "y": 610,
+        "wires": []
+    },
+    {
+        "id": "9d471f35.41dd5",
+        "type": "comment",
+        "z": "83bf5489.fdc9e8",
+        "name": "result:",
+        "info": "0 = Success\n1 = State Conflict\n2 = Not Supported\n3 = Service Pending\n4 = Wrong Parameter\n5 = No Communication\n6 = Min Cycle Time\n7 = No Resources\n8 = Abort",
+        "x": 329.4166030883789,
+        "y": 265,
+        "wires": []
+    },
+    {
+        "id": "c1e610cf.3eae5",
+        "type": "ui_text",
+        "z": "83bf5489.fdc9e8",
+        "group": "bdc8583d.d1cf18",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "IO-Link Master Stack Revision:",
+        "format": "{{msg.iolMasterStackRevision}}",
+        "layout": "row-spread",
+        "x": 590,
+        "y": 230,
+        "wires": []
+    },
+    {
+        "id": "638cb089.63559",
+        "type": "ui_text",
+        "z": "83bf5489.fdc9e8",
+        "group": "bdc8583d.d1cf18",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Vendor ID:",
+        "format": "{{msg.vendorID}}",
+        "layout": "row-spread",
+        "x": 530,
+        "y": 70,
+        "wires": []
+    },
+    {
+        "id": "5d8d3381.96d71c",
+        "type": "ui_text",
+        "z": "83bf5489.fdc9e8",
+        "group": "bdc8583d.d1cf18",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Device ID:",
+        "format": "{{msg.deviceID}}",
+        "layout": "row-spread",
+        "x": 530,
+        "y": 110,
+        "wires": []
+    },
+    {
+        "id": "c766c2c5.fc503",
+        "type": "ui_text",
+        "z": "83bf5489.fdc9e8",
+        "group": "bdc8583d.d1cf18",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Master Build Revision:",
+        "format": "{{msg.masterBuildRevision}}",
+        "layout": "row-spread",
+        "x": 560,
+        "y": 190,
+        "wires": []
+    },
+    {
+        "id": "106aa627.9d454a",
+        "type": "ui_text",
+        "z": "83bf5489.fdc9e8",
+        "group": "bdc8583d.d1cf18",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "IO-Link Master Stack Build Revision:",
+        "format": "{{msg.iolMasterStackBuildRevision}}",
+        "layout": "row-spread",
+        "x": 610,
+        "y": 270,
+        "wires": []
+    },
+    {
+        "id": "3dc85823.ee8278",
+        "type": "ui_text",
+        "z": "83bf5489.fdc9e8",
+        "group": "bdc8583d.d1cf18",
+        "order": 7,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Port Mode:",
+        "format": "{{msg.portModeHex}}",
+        "layout": "row-spread",
+        "x": 530,
+        "y": 310,
+        "wires": []
+    },
+    {
+        "id": "96e3b72d.12e278",
+        "type": "function",
+        "z": "83bf5489.fdc9e8",
+        "name": "extract data",
+        "func": "msg1 = {};\nmsg2 = {};\nmsg3 = {};\nmsg4 = {};\n\n\nif(msg.command === 10 && msg.bniPort !== 255 || msg.command === 13 && msg.bniPort !== 255) //the structure is different \n{\n    let responseSplit = msg.response.split(' ');\n    responseSplit.splice(0, 5);\n    \n    if(msg.command === 10)\n    {\n    responseSplit.pop();\n    }\n    \n    let hexComplete = responseSplit.join(' ');  //Hexadecimal\n    msg1.payload = hexComplete;\n\n    let hexString_blank = hexComplete.replace(/\\s/g,'');\n    let number = parseInt(hexString_blank, 16);\n    msg2.payload = number.toString(2);     //Binary\n    \n    msg3.payload = number.toString(10);    //Decimal\n    \n    msg4.payload = number;\n\n\n}\n\nelse if(msg.command === 10 && msg.bniPort !== 255 || msg.command === 13 && msg.bniPort === 255)\n{\n    // Byte 5 ... gibt Länge der Port Daten an \n    return;\n}\n\ndelete msg.fromip;\ndelete msg.ip;\ndelete msg.port;\ndelete msg.bniPort;\ndelete msg.command;\ndelete msg.protocolRevision;\ndelete msg.dataLength;\ndelete msg.data;\ndelete msg.valid;\n\n\nreturn [msg1, msg2, msg3, msg4];",
+        "outputs": "4",
+        "noerr": 0,
+        "x": 500,
+        "y": 740,
+        "wires": [
+            [
+                "f006b436.f59458",
+                "3083a48c.34807c"
+            ],
+            [
+                "a852ff6b.41ff5",
+                "d54a0aa1.ea5488"
+            ],
+            [
+                "2e7df305.151cdc"
+            ],
+            [
+                "7c19103.3e5b0f"
+            ]
+        ]
+    },
+    {
+        "id": "f006b436.f59458",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "Hex",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 660,
+        "y": 650,
+        "wires": []
+    },
+    {
+        "id": "d5bb10d2.d1f32",
+        "type": "comment",
+        "z": "83bf5489.fdc9e8",
+        "name": "show return data ",
+        "info": "",
+        "x": 540,
+        "y": 30,
+        "wires": []
+    },
+    {
+        "id": "e21bb806.999d88",
+        "type": "ui_text",
+        "z": "83bf5489.fdc9e8",
+        "group": "f3d6fce1.f6118",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Read Parameter Data",
+        "format": "{{msg.parameterData}}",
+        "layout": "row-spread",
+        "x": 560,
+        "y": 350,
+        "wires": []
+    },
+    {
+        "id": "93f21c73.c483d",
+        "type": "comment",
+        "z": "83bf5489.fdc9e8",
+        "name": "Old",
+        "info": "First Versions: Configurations in JSON File in change Nodes",
+        "x": 90,
+        "y": 1590,
+        "wires": []
+    },
+    {
+        "id": "5977c74f.a87ad8",
+        "type": "comment",
+        "z": "83bf5489.fdc9e8",
+        "name": "Probleme",
+        "info": "    .ReadProcessDataOutput: Daten von 9 bzw. 17 Ports??? (S. 30)\n    \n    .ReadProcessData: bei FF werden Werte von 8 bzw. 16 Ports\n    gesendet, trotz 4 bzw. 8 Port Master (S. 26)\n    \n    .ReadProcessData: bei FF stimmt DataLength nicht (S. 26) \n        Data Length stimmt bei anderen ebenfalls nicht.\n\n    .WriteProcessData: Antwort ist Standart Receipt \n    (S. 7) statt WriteProcessDataCon \n    (welche keine relevanten Infos beinhaltet)(S. 27)\n    \n    .GetPortConfig: Bei Protocoll Revision 3 ist \n    Byte 0 ebenfalls 37 anstatt 45. (S. 16)\n        Datenlänge nur bis 37 (UniqueID ... fehlt)\n        \n    \n-----------------------------\n\n\n- Unklare Punkte klären:\n    .SM_GetMasterConfig: Antwort ist Standart Receipt \n    (S. 7) statt SM_GetMasterConfigCon (S. 9)\n   \n    .WriteProcessData: Stimmt Byte 0, 1 \n    wenn Length über 255? (S . 27) (Bitreihenfolge?)\n    \n    .GetRTClock: Falsches Kommando statt 182 \n    kommt 181 (was für SetRTClock verwendet wird) (S. 34)\n    \n    .SetRTClock: Nicht möglich. Im Log taucht Meldung\n    \"time value too little\" auf (S. 33)",
+        "x": 970,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "eb84b134.a14c",
+        "type": "ui_template",
+        "z": "83bf5489.fdc9e8",
+        "group": "21b2cfbc.a0774",
+        "name": "Balluff Logo ",
+        "order": 1,
+        "width": "12",
+        "height": "3",
+        "format": "<!DOCTYPE html>\n\n<a href= \"http://balluf.de\" >\n<img src=\"http://localhost:1880/logo\"\n alt=\"Logo\" \n width=\"500\"\n height=\"112\"\n border=\"0\"\n/>\n</a>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "templateScope": "local",
+        "x": 950,
+        "y": 1480,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "826b53de.a4e96",
+        "type": "http response",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 750,
+        "y": 1480,
+        "wires": []
+    },
+    {
+        "id": "33b80ebc.76b8c2",
+        "type": "file in",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "filename": "\\\\ackbar\\Templates\\Vorlagen\\Logo\\Balluff-sw_50.bmp",
+        "format": "",
+        "sendError": true,
+        "x": 460,
+        "y": 1480,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "61e3e5e8.b7effc",
+        "type": "http in",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "url": "/logo",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 1480,
+        "wires": [
+            [
+                "3bc7553b.afaeea"
+            ]
+        ]
+    },
+    {
+        "id": "c2cb2568.32f158",
+        "type": "ui_chart",
+        "z": "83bf5489.fdc9e8",
+        "name": "Visualisierung",
+        "group": "e3dd8e0f.b78be",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "Sensor Chart",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "",
+        "removeOlder": "30",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "1",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#ff0000",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#4fe0ff",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "x": 1170,
+        "y": 730,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "1a60f398.1f22dc",
+        "type": "ui_button",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "group": "e3dd8e0f.b78be",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Visualisierung zurücksetzen",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "true",
+        "payloadType": "bool",
+        "topic": "",
+        "x": 940,
+        "y": 660,
+        "wires": [
+            [
+                "bf984ada.f655a8"
+            ]
+        ]
+    },
+    {
+        "id": "bf984ada.f655a8",
+        "type": "function",
+        "z": "83bf5489.fdc9e8",
+        "name": "Clear chart",
+        "func": "var arr1=[]\n\nif (msg.payload===true) {\n    msg.topic = \"Clear\";\n    msg.payload = [];\n    return msg;\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1160,
+        "y": 660,
+        "wires": [
+            [
+                "c2cb2568.32f158"
+            ]
+        ]
+    },
+    {
+        "id": "d54a0aa1.ea5488",
+        "type": "function",
+        "z": "83bf5489.fdc9e8",
+        "name": "Calculate and prepare graphs",
+        "func": "var msg1={};\nvar msg2={};\n\nvar result;\nvar secondWave          =global.get(\"second_wave\");\nvar GraphName           =global.get(\"graph_line_name\");\nvar GraphMaxName        =global.get(\"graph_max_name\");\nvar MaxValue            =global.get(\"value_max\");\nvar Resolution          =global.get(\"value_resolution\");\nvar DataBytePos         =global.get(\"data_byte_pos\");\nvar DataBitPos          =global.get(\"data_bit_pos\");\nvar SensorResolution    =global.get(\"sensor_resolution\");\nvar SensorTypeRelative  =global.get(\"sensor_type_relative\");\nvar SensorMaxValue      =global.get(\"sensor_max_value\");\n\n\nvar sensor_numeric = msg.payload.substr(DataBytePos*8 + DataBitPos, Resolution); \nsensor_numeric=parseInt(sensor_numeric,2); \n\n\nif (SensorTypeRelative === true) \n{\n    result=Math.round((sensor_numeric/(SensorMaxValue*SensorResolution))*MaxValue); //calculation of sensor (relative) value with digit\n}\nelse\n{\n    result=Math.round((sensor_numeric/(Math.pow(2,Resolution)))*MaxValue);  //calculation of sensor value with resolution\n}\n\n\nmsg1.topic=GraphName;\nmsg1.payload =result;\nmsg2.topic=GraphMaxName;\nmsg2.payload=MaxValue;\n\n\nif(secondWave === true) //show Maximum Wave in Chart\n{\nreturn [msg1,msg2];\n}\nelse\n{\nreturn [msg1, null]; //only the sensor Value will be sent\n}",
+        "outputs": "2",
+        "noerr": 0,
+        "x": 870,
+        "y": 730,
+        "wires": [
+            [
+                "76f1c8e3.30d248",
+                "c2cb2568.32f158"
+            ],
+            [
+                "c2cb2568.32f158"
+            ]
+        ]
+    },
+    {
+        "id": "78d373bd.ed48bc",
+        "type": "ui_text_input",
+        "z": "83bf5489.fdc9e8",
+        "name": "Bezeichnung des Maximalwertes",
+        "label": "Bezeichnung des Maximalwertes",
+        "group": "296b63c0.041e2c",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "mode": "text",
+        "delay": 300,
+        "topic": "",
+        "x": 180,
+        "y": 930,
+        "wires": [
+            [
+                "de3b5f82.154a3"
+            ]
+        ]
+    },
+    {
+        "id": "de3b5f82.154a3",
+        "type": "function",
+        "z": "83bf5489.fdc9e8",
+        "name": "Global set graph_max_name",
+        "func": "global.set(\"graph_max_name\",msg.payload);\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 510,
+        "y": 930,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e19bf2fa.dc057",
+        "type": "ui_text_input",
+        "z": "83bf5489.fdc9e8",
+        "name": "Maximalwert",
+        "label": "Maximalwert",
+        "group": "296b63c0.041e2c",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "mode": "text",
+        "delay": 300,
+        "topic": "",
+        "x": 109.5,
+        "y": 971.25,
+        "wires": [
+            [
+                "f5e451dc.186aa"
+            ]
+        ]
+    },
+    {
+        "id": "f5e451dc.186aa",
+        "type": "function",
+        "z": "83bf5489.fdc9e8",
+        "name": "Global set value_max",
+        "func": "global.set(\"value_max\",parseInt(msg.payload));\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 490,
+        "y": 970,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "92b58f03.c7ec9",
+        "type": "ui_text_input",
+        "z": "83bf5489.fdc9e8",
+        "name": "Bezeichnung der Kurve",
+        "label": "Bezeichnung der Kurve",
+        "group": "296b63c0.041e2c",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "mode": "text",
+        "delay": 300,
+        "topic": "",
+        "x": 150,
+        "y": 890,
+        "wires": [
+            [
+                "9b3d9604.4007e8"
+            ]
+        ]
+    },
+    {
+        "id": "9b3d9604.4007e8",
+        "type": "function",
+        "z": "83bf5489.fdc9e8",
+        "name": "Global set graph_line_name",
+        "func": "global.set(\"graph_line_name\",msg.payload);\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 510,
+        "y": 890,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "76f1c8e3.30d248",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "Sensor Data",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 1160,
+        "y": 790,
+        "wires": []
+    },
+    {
+        "id": "77b6b8ab.6013e8",
+        "type": "ui_text_input",
+        "z": "83bf5489.fdc9e8",
+        "name": "Position des ersten Daten-Bit (in Byte)",
+        "label": "Position des ersten Daten-Bit (in Byte)",
+        "group": "465d6c88.031b04",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "mode": "text",
+        "delay": 300,
+        "topic": "",
+        "x": 850,
+        "y": 890,
+        "wires": [
+            [
+                "86f6a312.b9d34"
+            ]
+        ]
+    },
+    {
+        "id": "86f6a312.b9d34",
+        "type": "function",
+        "z": "83bf5489.fdc9e8",
+        "name": "Global set data_bit_pos",
+        "func": "global.set(\"data_bit_pos\",parseInt(msg.payload));\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1180,
+        "y": 890,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3b3949ac.787286",
+        "type": "function",
+        "z": "83bf5489.fdc9e8",
+        "name": "Global set data_byte_pos",
+        "func": "global.set(\"data_byte_pos\",parseInt(msg.payload));\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1178.142807006836,
+        "y": 850.2499866485596,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4be529dd.2ec698",
+        "type": "ui_text_input",
+        "z": "83bf5489.fdc9e8",
+        "name": "Position des ersten Byte (Daten)",
+        "label": "Position des ersten Daten-Byte",
+        "group": "465d6c88.031b04",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "mode": "text",
+        "delay": 300,
+        "topic": "",
+        "x": 830.6666641235352,
+        "y": 850,
+        "wires": [
+            [
+                "3b3949ac.787286"
+            ]
+        ]
+    },
+    {
+        "id": "d7d01c75.6a5e6",
+        "type": "ui_numeric",
+        "z": "83bf5489.fdc9e8",
+        "name": "Sensorgenauigkeit",
+        "label": "Sensorgenauigkeit",
+        "group": "465d6c88.031b04",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "topic": "",
+        "format": "{{value}}digits/mm",
+        "min": 0,
+        "max": "10000",
+        "step": 1,
+        "x": 790,
+        "y": 970,
+        "wires": [
+            [
+                "8b499b63.966e88"
+            ]
+        ]
+    },
+    {
+        "id": "33d6524a.5519fe",
+        "type": "ui_text_input",
+        "z": "83bf5489.fdc9e8",
+        "name": "Maximaler Abstandswert (mm)",
+        "label": "Maximaler Abstandswert (mm)",
+        "group": "465d6c88.031b04",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "mode": "text",
+        "delay": 300,
+        "topic": "",
+        "x": 830,
+        "y": 1010,
+        "wires": [
+            [
+                "8e478c4d.0dc51"
+            ]
+        ]
+    },
+    {
+        "id": "8e478c4d.0dc51",
+        "type": "function",
+        "z": "83bf5489.fdc9e8",
+        "name": "Global set sensor_max_value",
+        "func": "global.set(\"sensor_max_value\",msg.payload);\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1198.142807006836,
+        "y": 1010.2499866485596,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8b499b63.966e88",
+        "type": "function",
+        "z": "83bf5489.fdc9e8",
+        "name": "Global set sensor_resolution",
+        "func": "global.set(\"sensor_resolution\",msg.payload);\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1188.142807006836,
+        "y": 970.2499866485596,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "bf13488a.c2fdd8",
+        "type": "ui_numeric",
+        "z": "83bf5489.fdc9e8",
+        "name": "Auflösung",
+        "label": "Auflösung",
+        "group": "465d6c88.031b04",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "topic": "",
+        "format": "{{value}}bit",
+        "min": 0,
+        "max": "50",
+        "step": 1,
+        "x": 100,
+        "y": 1010,
+        "wires": [
+            [
+                "15f6a53d.66d9bb"
+            ]
+        ]
+    },
+    {
+        "id": "15f6a53d.66d9bb",
+        "type": "function",
+        "z": "83bf5489.fdc9e8",
+        "name": "Global set value_resolution",
+        "func": "global.set(\"value_resolution\",msg.payload);\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 510,
+        "y": 1010,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "9b6ffd1a.a671d",
+        "type": "ui_switch",
+        "z": "83bf5489.fdc9e8",
+        "name": "Standardsensor",
+        "label": "Standardsensor",
+        "group": "465d6c88.031b04",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "",
+        "style": "",
+        "onvalue": "true",
+        "onvalueType": "bool",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "false",
+        "offvalueType": "bool",
+        "officon": "",
+        "offcolor": "",
+        "x": 780,
+        "y": 930,
+        "wires": [
+            [
+                "e5c30f4.d51fbf"
+            ]
+        ]
+    },
+    {
+        "id": "e5c30f4.d51fbf",
+        "type": "function",
+        "z": "83bf5489.fdc9e8",
+        "name": "Global set sensor_type_relative",
+        "func": "global.set(\"sensor_type_relative\",msg.payload);\n\n//on=true\n//off=false",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1198.142807006836,
+        "y": 930.2499866485596,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "719c4401.e2f40c",
+        "type": "ui_numeric",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "label": "Port",
+        "group": "323bde26.a4f522",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "topic": "",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "7",
+        "step": 1,
+        "x": 220,
+        "y": 1100,
+        "wires": [
+            [
+                "ece1666.24cac98"
+            ]
+        ]
+    },
+    {
+        "id": "ece1666.24cac98",
+        "type": "function",
+        "z": "83bf5489.fdc9e8",
+        "name": "set port to global.portStream",
+        "func": "global.set(\"portStream\" ,msg.payload);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 439,
+        "y": 1100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "62e44377.b73d5c",
+        "type": "trigger",
+        "z": "83bf5489.fdc9e8",
+        "op1": "true",
+        "op2": "0",
+        "op1type": "bool",
+        "op2type": "str",
+        "duration": "-75",
+        "extend": false,
+        "units": "ms",
+        "reset": "stop",
+        "name": "",
+        "x": 409,
+        "y": 1148,
+        "wires": [
+            [
+                "a32d83f5.0a3ed"
+            ]
+        ]
+    },
+    {
+        "id": "8333e3a0.c4734",
+        "type": "ui_button",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "group": "323bde26.a4f522",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Start",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "start",
+        "payloadType": "str",
+        "topic": "",
+        "x": 222,
+        "y": 1148,
+        "wires": [
+            [
+                "62e44377.b73d5c"
+            ]
+        ]
+    },
+    {
+        "id": "752a2d69.3ae884",
+        "type": "ui_button",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "group": "323bde26.a4f522",
+        "order": 7,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Stop ",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "stop",
+        "payloadType": "str",
+        "topic": "",
+        "x": 221,
+        "y": 1192,
+        "wires": [
+            [
+                "62e44377.b73d5c"
+            ]
+        ]
+    },
+    {
+        "id": "6dd70501.1a84dc",
+        "type": "comment",
+        "z": "83bf5489.fdc9e8",
+        "name": "Same in Process Data (only for creating the Visu)",
+        "info": "",
+        "x": 240,
+        "y": 1060,
+        "wires": []
+    },
+    {
+        "id": "2f47eb4c.7e99c4",
+        "type": "subflow:d066d7b5.1e2778",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "env": [],
+        "x": 1020,
+        "y": 1150,
+        "wires": [
+            [],
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "db341c8c.88335",
+        "type": "subflow:85778b75.c5b0c8",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "x": 1020,
+        "y": 1240,
+        "wires": [
+            [
+                "7664cf4a.d68bb"
+            ],
+            [
+                "bb4e777.6627d88"
+            ]
+        ]
+    },
+    {
+        "id": "a32d83f5.0a3ed",
+        "type": "function",
+        "z": "83bf5489.fdc9e8",
+        "name": "move portStream to msg.payload",
+        "func": "let bniPort = global.get('portStream');\n\nmsg.payload = [];\n\nfor(i=0; i <= 7; i++)\n{\n    if(i === bniPort)\n    {\n        msg.payload[i] = true;\n    }\n    else\n    {\n        msg.payload[i] = false;\n    }\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 487,
+        "y": 1192,
+        "wires": [
+            [
+                "e329d4f5.d53348"
+            ]
+        ]
+    },
+    {
+        "id": "829cc86.1234238",
+        "type": "comment",
+        "z": "83bf5489.fdc9e8",
+        "name": "actual for master with max 8 port",
+        "info": "",
+        "x": 480,
+        "y": 1229,
+        "wires": []
+    },
+    {
+        "id": "e329d4f5.d53348",
+        "type": "function",
+        "z": "83bf5489.fdc9e8",
+        "name": "Input or Output",
+        "func": "let direction = global.get(\"direction\");\n\nvar msg1;\nvar msg2;\nvar msg3;\n\nif(direction === \"input\")\n{\n    msg1 = {payload: msg.payload};\n    return [msg1, msg2, null]; //only in msg1 and the first output is a msg \n}\n\nelse if(direction === \"output\")\n{\n    msg2 = {payload: msg.payload};\n    return [msg1, msg2, null]; //only in msg2 and the second output is a msg \n}\nelse\n{\n    msg3 = {payload: \"please select a Direction\"};\n    return [null, null, msg3]; //only the error msg. is sent to the third Output\n}\n\nreturn;",
+        "outputs": "3",
+        "noerr": 0,
+        "x": 749,
+        "y": 1192,
+        "wires": [
+            [],
+            [
+                "db341c8c.88335"
+            ],
+            [
+                "fcdc7470.83e548"
+            ]
+        ]
+    },
+    {
+        "id": "7664cf4a.d68bb",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 1260,
+        "y": 1220,
+        "wires": []
+    },
+    {
+        "id": "d27c30f.bcc7fd",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 1260,
+        "y": 1130,
+        "wires": []
+    },
+    {
+        "id": "d2adb474.576728",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "Error",
+        "active": true,
+        "console": "false",
+        "complete": "true",
+        "x": 1260,
+        "y": 1170,
+        "wires": []
+    },
+    {
+        "id": "bb4e777.6627d88",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "Error",
+        "active": true,
+        "console": "false",
+        "complete": "true",
+        "x": 1260,
+        "y": 1260,
+        "wires": []
+    },
+    {
+        "id": "fcdc7470.83e548",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "Error",
+        "active": true,
+        "console": "false",
+        "complete": "true",
+        "x": 880,
+        "y": 1280,
+        "wires": []
+    },
+    {
+        "id": "a852ff6b.41ff5",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "Bin",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 660,
+        "y": 690,
+        "wires": []
+    },
+    {
+        "id": "2e7df305.151cdc",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "Dec",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 660,
+        "y": 770,
+        "wires": []
+    },
+    {
+        "id": "7c19103.3e5b0f",
+        "type": "debug",
+        "z": "83bf5489.fdc9e8",
+        "name": "Num",
+        "active": false,
+        "console": "false",
+        "complete": "true",
+        "x": 660,
+        "y": 810,
+        "wires": []
+    },
+    {
+        "id": "b10c1bb4.ba70e8",
+        "type": "ui_switch",
+        "z": "83bf5489.fdc9e8",
+        "name": "Zweite Kurve anzeigen",
+        "label": "Show Maximal Wave",
+        "group": "e3dd8e0f.b78be",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "",
+        "style": "",
+        "onvalue": "true",
+        "onvalueType": "bool",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "false",
+        "offvalueType": "bool",
+        "officon": "",
+        "offcolor": "",
+        "x": 140,
+        "y": 850,
+        "wires": [
+            [
+                "1d140317.9d2d6d"
+            ]
+        ]
+    },
+    {
+        "id": "1d140317.9d2d6d",
+        "type": "function",
+        "z": "83bf5489.fdc9e8",
+        "name": "Global set second_wave",
+        "func": "global.set(\"second_wave\",msg.payload);\n\n//on=true\n//off=false",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 500,
+        "y": 850,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "dff19f23.f7426",
+        "type": "comment",
+        "z": "83bf5489.fdc9e8",
+        "name": "seperate the data of the return message ",
+        "info": "1. Output = Data as Hex-String\n2. Output = Data as Bin-String\n3. Output = Data as Dec-String\n4. Output = Data as Number ",
+        "x": 410,
+        "y": 790,
+        "wires": []
+    },
+    {
+        "id": "11194ee9.466a91",
+        "type": "comment",
+        "z": "83bf5489.fdc9e8",
+        "name": "calculate data + create second wave",
+        "info": "",
+        "x": 880,
+        "y": 770,
+        "wires": []
+    },
+    {
+        "id": "ee95ec89.4913",
+        "type": "comment",
+        "z": "83bf5489.fdc9e8",
+        "name": "Show Local picture in Dashboard",
+        "info": "Set Local picture on webserver \nlocalhost:1880/logo",
+        "x": 330,
+        "y": 1440,
+        "wires": []
+    },
+    {
+        "id": "3bc7553b.afaeea",
+        "type": "http request",
+        "z": "83bf5489.fdc9e8",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "url": "https://de.wikipedia.org/wiki/Balluff#/media/File:Balluff_Logo.svg",
+        "tls": "",
+        "x": 360,
+        "y": 1360,
+        "wires": [
+            [
+                "826b53de.a4e96"
+            ]
+        ]
+    },
+    {
+        "id": "bdc8583d.d1cf18",
+        "type": "ui_group",
+        "z": "",
+        "name": "Return Values",
+        "tab": "a60ccbe.2ef4b38",
+        "order": 4,
+        "disp": true,
+        "width": "10",
+        "collapse": false
+    },
+    {
+        "id": "9f0c03e8.ae32e",
+        "type": "ui_group",
+        "z": "",
+        "name": "Master Info",
+        "tab": "b9b546af.bdc468",
+        "order": 5,
+        "disp": true,
+        "width": "10"
+    },
+    {
+        "id": "f3d6fce1.f6118",
+        "type": "ui_group",
+        "z": "",
+        "name": "Read  Parameter Data",
+        "tab": "c4f8f1e1.afd4c",
+        "order": 3,
+        "disp": true,
+        "width": "10"
+    },
+    {
+        "id": "21b2cfbc.a0774",
+        "type": "ui_group",
+        "z": "",
+        "name": "Auswertung",
+        "tab": "792d251f.17315c",
+        "order": 2,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "e3dd8e0f.b78be",
+        "type": "ui_group",
+        "z": "",
+        "name": "Chart",
+        "tab": "3c4bad01.6dfd02",
+        "order": 4,
+        "disp": true,
+        "width": "10"
+    },
+    {
+        "id": "296b63c0.041e2c",
+        "type": "ui_group",
+        "z": "",
+        "name": "Chart Settings",
+        "tab": "3c4bad01.6dfd02",
+        "order": 3,
+        "disp": true,
+        "width": "10"
+    },
+    {
+        "id": "465d6c88.031b04",
+        "type": "ui_group",
+        "z": "",
+        "name": "Sensor Settings",
+        "tab": "3c4bad01.6dfd02",
+        "order": 2,
+        "disp": true,
+        "width": "10"
+    },
+    {
+        "id": "323bde26.a4f522",
+        "type": "ui_group",
+        "z": "",
+        "name": "Master Settings",
+        "tab": "3c4bad01.6dfd02",
+        "order": 1,
+        "disp": true,
+        "width": "10"
+    },
+    {
+        "id": "a60ccbe.2ef4b38",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Master Configuration",
+        "icon": "dashboard",
+        "order": 33
+    },
+    {
+        "id": "b9b546af.bdc468",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Master Configuration",
+        "icon": "dashboard",
+        "order": 32
+    },
+    {
+        "id": "c4f8f1e1.afd4c",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Parameter Data",
+        "icon": "dashboard",
+        "order": 25
+    },
+    {
+        "id": "792d251f.17315c",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Auswertung Puferstände",
+        "icon": "dashboard",
+        "order": 31
+    },
+    {
+        "id": "3c4bad01.6dfd02",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Visualisierung",
+        "icon": "dashboard",
+        "order": 17
+    }
+]

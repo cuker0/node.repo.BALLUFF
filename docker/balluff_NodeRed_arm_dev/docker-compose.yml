@@ -7,7 +7,7 @@ services:
     ports:
       - "1880:1880"
     #volumes: 
-    #  - /PeDev/DockerEnvironment/Dev/arch_arm32v7/NodeRed/data:/data
+      - .\VolumeData:/data
     networks:
       - edge 
   

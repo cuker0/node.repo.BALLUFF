@@ -1,0 +1,971 @@
+[
+    {
+        "id": "eb7ab8f2.ab2708",
+        "type": "tab",
+        "label": "API Examples",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "4cf8fea2.5d3bd",
+        "type": "inject",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "0.5",
+        "x": 160,
+        "y": 180,
+        "wires": [
+            [
+                "dbbdd49e.3b1df8"
+            ]
+        ]
+    },
+    {
+        "id": "9152a295.ced7c",
+        "type": "inject",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 120,
+        "y": 600,
+        "wires": [
+            [
+                "ec5ac29.867134"
+            ]
+        ]
+    },
+    {
+        "id": "8bdd98ad.637738",
+        "type": "http request",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "proxy": "",
+        "authType": "basic",
+        "x": 630,
+        "y": 600,
+        "wires": [
+            [
+                "476ea549.70b83c",
+                "30f70b5a.3be3a4"
+            ]
+        ]
+    },
+    {
+        "id": "ec5ac29.867134",
+        "type": "function",
+        "z": "eb7ab8f2.ab2708",
+        "name": "[API GET] devices /processdata",
+        "func": "var port=3;\nvar ip=global.get(\"ip\");\n\nmsg.url=\"http://\" + ip + \"/iolink/v1/devices/master1port\" + port + \"/processdata/value?format=raw&content=measure\";\nmsg.method=\"GET\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 390,
+        "y": 600,
+        "wires": [
+            [
+                "8bdd98ad.637738"
+            ]
+        ]
+    },
+    {
+        "id": "b2e7b070.4ca51",
+        "type": "ui_chart",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "group": "8b37ce1e.7573b",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "label": "chart",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "outputs": 2,
+        "x": 1430,
+        "y": 600,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "51d577dc.9c95c8",
+        "type": "function",
+        "z": "eb7ab8f2.ab2708",
+        "name": "Extrat BMP position",
+        "func": "msg.payload=(parseInt(msg.payload.substr(16, 32),2)/1200*32)/1000000;\n\nif (msg.payload>32)\n{\n    msg.payload=32;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1170,
+        "y": 600,
+        "wires": [
+            [
+                "b2e7b070.4ca51",
+                "bb6b14c.808ace8"
+            ]
+        ]
+    },
+    {
+        "id": "476ea549.70b83c",
+        "type": "function",
+        "z": "eb7ab8f2.ab2708",
+        "name": "[API] Processdata to Bitstring",
+        "func": "var s=msg.payload.measure.ioLink.value;\n\n\n for (i = 0; i < s.length; i += 1) {\n    \n    s[i]=s[i].toString(2);\n    \n    var strLen=s[i].length;\n    \n    if (strLen<8) {\n       \n       for (j = 0; j < (8-strLen); j++) {\n           s[i] = \"0\" + s[i];\n       }\n       \n    }\n\n   \n }\n\nmsg.payload=s.join(\"\");\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 880,
+        "y": 600,
+        "wires": [
+            [
+                "51d577dc.9c95c8"
+            ]
+        ]
+    },
+    {
+        "id": "29ec5c7f.851ee4",
+        "type": "change",
+        "z": "eb7ab8f2.ab2708",
+        "name": "set Master-IP and ports",
+        "rules": [
+            {
+                "t": "set",
+                "p": "ip",
+                "pt": "global",
+                "to": "192.168.0.20",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "ports",
+                "pt": "global",
+                "to": "[0,1,2,3,4,5,6,7]",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 550,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5ea9cc60.f75a64",
+        "type": "inject",
+        "z": "eb7ab8f2.ab2708",
+        "name": "One Time each Master startup",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "5",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0.1",
+        "x": 230,
+        "y": 120,
+        "wires": [
+            [
+                "29ec5c7f.851ee4"
+            ]
+        ]
+    },
+    {
+        "id": "ca1f3f7a.eb0a6",
+        "type": "http request",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "proxy": "",
+        "authType": "basic",
+        "x": 710,
+        "y": 180,
+        "wires": [
+            [
+                "20736064.82936",
+                "c9c2b2ca.9c0d2"
+            ]
+        ]
+    },
+    {
+        "id": "dbbdd49e.3b1df8",
+        "type": "function",
+        "z": "eb7ab8f2.ab2708",
+        "name": "[API POST] User management /users/login",
+        "func": "var ip=global.get(\"ip\");\n\nmsg.url=\"http://\" + ip + \"/api/balluff/v1/users/login\";\nmsg.method=\"POST\";\n\nmsg.payload={\n    \"username\": \"Admin\",\n    \"password\": \"Balluff#1\"   \n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 430,
+        "y": 180,
+        "wires": [
+            [
+                "ca1f3f7a.eb0a6"
+            ]
+        ]
+    },
+    {
+        "id": "20736064.82936",
+        "type": "change",
+        "z": "eb7ab8f2.ab2708",
+        "name": "set Session ID",
+        "rules": [
+            {
+                "t": "set",
+                "p": "sessionID",
+                "pt": "global",
+                "to": "payload.JSESSIONID",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 900,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6bfbcf20.fe109",
+        "type": "comment",
+        "z": "eb7ab8f2.ab2708",
+        "name": "[API] Configuration",
+        "info": "",
+        "x": 150,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "f07d5177.fb3a8",
+        "type": "comment",
+        "z": "eb7ab8f2.ab2708",
+        "name": "[API] Ports",
+        "info": "",
+        "x": 120,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "aa7bce64.4fbfc",
+        "type": "inject",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "0.5",
+        "x": 140,
+        "y": 380,
+        "wires": [
+            [
+                "9c0ad47d.ae88f8"
+            ]
+        ]
+    },
+    {
+        "id": "8d402a6.9c8d2d8",
+        "type": "http request",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "proxy": "",
+        "authType": "",
+        "x": 670,
+        "y": 380,
+        "wires": [
+            [
+                "1d109653.4c1c6a"
+            ]
+        ]
+    },
+    {
+        "id": "9c0ad47d.ae88f8",
+        "type": "function",
+        "z": "eb7ab8f2.ab2708",
+        "name": "[API POST] ports /configuration",
+        "func": "var ip=global.get(\"ip\");\nvar master=1;\nvar port=3;\n\n\nmsg.url=\"http://\" + ip + \"/iolink/v1/masters/\" + master +\"/ports/\" + port + \"/configuration\";\nmsg.method=\"POST\";\n\n\nmsg.headers={\n    Authorization: \"Bearer \"+ global.get(\"sessionID\")\n}\n\nmsg.payload={\n    \"mode\": \"IOLINK_AUTOSTART\",\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 370,
+        "y": 380,
+        "wires": [
+            [
+                "8d402a6.9c8d2d8",
+                "b36050cf.b0dc2"
+            ]
+        ]
+    },
+    {
+        "id": "3474db42.201ac4",
+        "type": "comment",
+        "z": "eb7ab8f2.ab2708",
+        "name": "[API] Devices",
+        "info": "",
+        "x": 130,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "41250dd3.7588a4",
+        "type": "inject",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "1.2",
+        "x": 140,
+        "y": 660,
+        "wires": [
+            [
+                "a5494b69.9ce6d8"
+            ]
+        ]
+    },
+    {
+        "id": "50cd564b.e8a768",
+        "type": "http request",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "proxy": "",
+        "authType": "basic",
+        "x": 630,
+        "y": 660,
+        "wires": [
+            [
+                "bc9ade92.80d7d"
+            ]
+        ]
+    },
+    {
+        "id": "a5494b69.9ce6d8",
+        "type": "function",
+        "z": "eb7ab8f2.ab2708",
+        "name": "[API GET] devices /parameter",
+        "func": "var port=2;\nvar ip=global.get(\"ip\");\n\nvar parameter=82;\n\n\nmsg.url=\"http://\" + ip + \"/iolink/v1/devices/master1port\" + port + \"/parameters/\" + parameter + \"/value?format=raw\";\nmsg.method=\"GET\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 390,
+        "y": 660,
+        "wires": [
+            [
+                "50cd564b.e8a768"
+            ]
+        ]
+    },
+    {
+        "id": "bc9ade92.80d7d",
+        "type": "function",
+        "z": "eb7ab8f2.ab2708",
+        "name": "BMP032 Temperature",
+        "func": "msg.internal_temp_actual =  msg.payload[1];\nmsg.internal_temp_min_startup = msg.payload[3];\nmsg.internal_temp_max_startup = msg.payload[5];\nmsg.internal_temp_min_lifetime = msg.payload[7];\nmsg.internal_temp_max_lifetime = msg.payload[9];\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 860,
+        "y": 660,
+        "wires": [
+            [
+                "796fecc1.ff7c04",
+                "8c2a2e6a.6cfcd"
+            ]
+        ]
+    },
+    {
+        "id": "796fecc1.ff7c04",
+        "type": "function",
+        "z": "eb7ab8f2.ab2708",
+        "name": "internal_temp_actual",
+        "func": "msg.payload = msg.internal_temp_actual;\nmsg.topic = \"internal_temp_actual\";\n\n//msg.label = \"internal_temp_actual\"\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1160,
+        "y": 660,
+        "wires": [
+            [
+                "f71bcc65.e61dd"
+            ]
+        ]
+    },
+    {
+        "id": "f71bcc65.e61dd",
+        "type": "change",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "BMP_temperature_actual",
+                "pt": "global",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1520,
+        "y": 660,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "64dc9fd5.ed144",
+        "type": "inject",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "1.5",
+        "x": 140,
+        "y": 740,
+        "wires": [
+            [
+                "315be616.935b3a"
+            ]
+        ]
+    },
+    {
+        "id": "5f653f99.e4e66",
+        "type": "http request",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "proxy": "",
+        "authType": "basic",
+        "x": 630,
+        "y": 740,
+        "wires": [
+            [
+                "68f27b9c.581724"
+            ]
+        ]
+    },
+    {
+        "id": "315be616.935b3a",
+        "type": "function",
+        "z": "eb7ab8f2.ab2708",
+        "name": "[API GET] devices /parameter",
+        "func": "var port=2;\nvar ip=global.get(\"ip\");\n\nvar parameter=88;\n\n\nmsg.url=\"http://\" + ip + \"/iolink/v1/devices/master1port\" + port + \"/parameters/\" + parameter + \"/value?format=raw\";\nmsg.method=\"GET\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 390,
+        "y": 740,
+        "wires": [
+            [
+                "5f653f99.e4e66"
+            ]
+        ]
+    },
+    {
+        "id": "94494bf5.5b0188",
+        "type": "change",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "BMP_Startup_Counter",
+                "pt": "global",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1520,
+        "y": 740,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "68f27b9c.581724",
+        "type": "function",
+        "z": "eb7ab8f2.ab2708",
+        "name": "Read Boot cycles BMP032",
+        "func": "msg.payload=msg.payload.value[3];\n\nif (typeof msg.payload !== 'undefined' && msg.payload !== null){\n   return msg;\n}\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 880,
+        "y": 740,
+        "wires": [
+            [
+                "94494bf5.5b0188",
+                "99002acb.ddc998",
+                "47e31981.b7a778"
+            ]
+        ]
+    },
+    {
+        "id": "99002acb.ddc998",
+        "type": "delay",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "10",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 1230,
+        "y": 780,
+        "wires": [
+            [
+                "7c776f1b.8e15b"
+            ]
+        ]
+    },
+    {
+        "id": "7c776f1b.8e15b",
+        "type": "change",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "BMP_Startup_Counter_10s",
+                "pt": "global",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1530,
+        "y": 780,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a6b65df.2e39ea",
+        "type": "inject",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "1",
+        "x": 140,
+        "y": 700,
+        "wires": [
+            [
+                "4dea5d44.1600f4"
+            ]
+        ]
+    },
+    {
+        "id": "e630bb20.72e518",
+        "type": "http request",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "proxy": "",
+        "authType": "basic",
+        "x": 630,
+        "y": 700,
+        "wires": [
+            [
+                "fde6a83d.fcbee8"
+            ]
+        ]
+    },
+    {
+        "id": "4dea5d44.1600f4",
+        "type": "function",
+        "z": "eb7ab8f2.ab2708",
+        "name": "[API GET] devices /parameter",
+        "func": "var port=2;\nvar ip=global.get(\"ip\");\n\nvar parameter=87;\n\n\nmsg.url=\"http://\" + ip + \"/iolink/v1/devices/master1port\" + port + \"/parameters/\" + parameter + \"/value?format=raw\";\nmsg.method=\"GET\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 390,
+        "y": 700,
+        "wires": [
+            [
+                "e630bb20.72e518"
+            ]
+        ]
+    },
+    {
+        "id": "b20d2033.fd1a3",
+        "type": "function",
+        "z": "eb7ab8f2.ab2708",
+        "name": "operating_hours_lifetime",
+        "func": "msg.payload = msg.operating_hours_lifetime;\nmsg.topic = \"operating_hours_lifetime\";\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1170,
+        "y": 700,
+        "wires": [
+            [
+                "5116ab5e.923d34"
+            ]
+        ]
+    },
+    {
+        "id": "5116ab5e.923d34",
+        "type": "change",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "BMP_OH_lifetime",
+                "pt": "global",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1500,
+        "y": 700,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "fde6a83d.fcbee8",
+        "type": "function",
+        "z": "eb7ab8f2.ab2708",
+        "name": "BMP032 Operating Hours",
+        "func": "\nif (typeof msg.payload !== 'undefined' && msg.payload !== null){\n    msg.operating_hours_lifetime = msg.payload[3];\n   return msg;\n   \n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 870,
+        "y": 700,
+        "wires": [
+            [
+                "b20d2033.fd1a3",
+                "49e17f7a.01978"
+            ]
+        ]
+    },
+    {
+        "id": "c9c2b2ca.9c0d2",
+        "type": "debug",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 1020,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "1d109653.4c1c6a",
+        "type": "debug",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 850,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "b36050cf.b0dc2",
+        "type": "debug",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 550,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "bb6b14c.808ace8",
+        "type": "debug",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 1330,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "8c2a2e6a.6cfcd",
+        "type": "debug",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 1310,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "47e31981.b7a778",
+        "type": "debug",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 1130,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "b2a7a0f3.2b3e3",
+        "type": "debug",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 890,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "49e17f7a.01978",
+        "type": "debug",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 870,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "73e3cd11.d6fa84",
+        "type": "inject",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "1.5",
+        "x": 160,
+        "y": 900,
+        "wires": [
+            [
+                "fff4677e.422fc8"
+            ]
+        ]
+    },
+    {
+        "id": "33369813.353828",
+        "type": "http request",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "proxy": "",
+        "authType": "basic",
+        "x": 730,
+        "y": 900,
+        "wires": [
+            [
+                "cf7abc07.a0cfa"
+            ]
+        ]
+    },
+    {
+        "id": "fff4677e.422fc8",
+        "type": "function",
+        "z": "eb7ab8f2.ab2708",
+        "name": "[API POST] devices /blockparameterization",
+        "func": "var port=2;\nvar ip=global.get(\"ip\");\n\nvar parameter=88;\n\n\nmsg.url=\"http://\" + ip + \"/iolink/v1/devices/master1port\" + port + \"/blockparameterization?format=byteArray\";\nmsg.method=\"POST\";\n\nmsg.headers={\n    Authorization: \"Bearer \"+ global.get(\"sessionID\")\n}\n\nmsg.payload=\n{\n  \"direction\": \"read\",\n  \"parameters\": [\n    {\n      \"address\": {\n        \"index\": 82\n      }\n    },\n    {\n      \"address\": {\n        \"index\": 87\n      }\n    }\n  ]\n};\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 450,
+        "y": 900,
+        "wires": [
+            [
+                "33369813.353828",
+                "50e9a0c1.7dddf"
+            ]
+        ]
+    },
+    {
+        "id": "cf7abc07.a0cfa",
+        "type": "debug",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 910,
+        "y": 900,
+        "wires": []
+    },
+    {
+        "id": "50e9a0c1.7dddf",
+        "type": "debug",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 470,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "30f70b5a.3be3a4",
+        "type": "function",
+        "z": "eb7ab8f2.ab2708",
+        "name": "",
+        "func": "if (msg.statusCode === 200){\n    msg.pd = msg.payload.measure.ioLink.value.toString();\n    return msg;\n}\n\n/*for(i=0 ; i<=msg.payload.measure.ioLink.value.length ; i++){\n        msg.pd = msg.payload.measure.ioLink.value[i] ;\n    }*/\n    ",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 750,
+        "y": 500,
+        "wires": [
+            [
+                "b2a7a0f3.2b3e3"
+            ]
+        ]
+    },
+    {
+        "id": "8b37ce1e.7573b",
+        "type": "ui_group",
+        "z": "",
+        "name": "Test",
+        "tab": "971a24e7.2ad968",
+        "disp": true,
+        "width": "13",
+        "collapse": false
+    },
+    {
+        "id": "971a24e7.2ad968",
+        "type": "ui_tab",
+        "z": "",
+        "name": "TestBlubb",
+        "icon": "dashboard"
+    }
+]

@@ -1,0 +1,3080 @@
+[
+    {
+        "id": "5ea6d14d.86d94",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "5cd89bc4.ccfafc",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "GATEWAY - get master MAC address",
+        "info": "",
+        "x": 250,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "2ed387b3.ba717",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "GATEWAY - get session ID & token",
+        "info": "",
+        "x": 240,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "eb916eb2.603f4",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 120,
+        "wires": [
+            [
+                "55bc755d.412004"
+            ]
+        ]
+    },
+    {
+        "id": "ca5d931a.a3a8d8",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "Set Master IP",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0.5",
+        "x": 180,
+        "y": 40,
+        "wires": [
+            [
+                "bfb13e0e.8f14d8"
+            ]
+        ]
+    },
+    {
+        "id": "55bc755d.412004",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.url = \"http://\" + flow.get('masterIp') + \"/api/balluff/v1/users/login\";\nmsg.method = \"POST\";\nmsg.payload={\n    \"username\": \"Admin\",\n    \"password\": \"Balluff#1\" }\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 120,
+        "wires": [
+            [
+                "c5d708ab.1f2ac"
+            ]
+        ]
+    },
+    {
+        "id": "c5d708ab.1f2ac",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 120,
+        "wires": [
+            [
+                "fdf6908f.83b49",
+                "291c4569.17f27a"
+            ]
+        ]
+    },
+    {
+        "id": "fdf6908f.83b49",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "4057456d.691cb4",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 240,
+        "wires": [
+            [
+                "929158e7.3e1b"
+            ]
+        ]
+    },
+    {
+        "id": "929158e7.3e1b",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/gateway/identification\";\nmsg.method = \"GET\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 240,
+        "wires": [
+            [
+                "98428acc.b457b"
+            ]
+        ]
+    },
+    {
+        "id": "98428acc.b457b",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 240,
+        "wires": [
+            [
+                "ede077c9.a0594"
+            ]
+        ]
+    },
+    {
+        "id": "ede077c9.a0594",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "1be2c5c3.f1e83a",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "GATEWAY - get gateway capabilities",
+        "info": "",
+        "x": 240,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "2fd06fcc.fd0c4",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 340,
+        "wires": [
+            [
+                "eeafe0.291c202"
+            ]
+        ]
+    },
+    {
+        "id": "eeafe0.291c202",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/gateway/capabilities\";\nmsg.method = \"GET\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 340,
+        "wires": [
+            [
+                "e0275ea3.31e8a"
+            ]
+        ]
+    },
+    {
+        "id": "e0275ea3.31e8a",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 340,
+        "wires": [
+            [
+                "359e8a57.9fb3d6"
+            ]
+        ]
+    },
+    {
+        "id": "359e8a57.9fb3d6",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "33a988e5.1326e8",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "GATEWAY - get gateway configuration",
+        "info": "",
+        "x": 250,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "3a9c0551.a0bba2",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 440,
+        "wires": [
+            [
+                "950c86df.30cdd"
+            ]
+        ]
+    },
+    {
+        "id": "950c86df.30cdd",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/gateway/configuration\";\nmsg.method = \"GET\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 440,
+        "wires": [
+            [
+                "7506b793.cff7d"
+            ]
+        ]
+    },
+    {
+        "id": "7506b793.cff7d",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 440,
+        "wires": [
+            [
+                "81b73f66.f4d228"
+            ]
+        ]
+    },
+    {
+        "id": "81b73f66.f4d228",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "4e0594ec.48e754",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "GATEWAY - set gateway configuration",
+        "info": "",
+        "x": 250,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "543eab36.b4f714",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 540,
+        "wires": [
+            [
+                "7c40fa68.e4eff4"
+            ]
+        ]
+    },
+    {
+        "id": "7c40fa68.e4eff4",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/gateway/configuration\";\nmsg.method = \"POST\";\nmsg.payload =   {\n        \"ethIpv4\": [{\n                    \"ipConfiguration\": \"MANUAL\",\n                    \"ipAddress\": \"192.168.2.41\",\n                    \"subnetMask\": \"255.255.255.0\",\n                    \"standardGateway\": \"192.168.2.1\"\n                    }]\n                }\nmsg.headers =   {\n                Authorization: \"Bearer \"+ flow.get('sessionID')\n                }\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 540,
+        "wires": [
+            [
+                "5234bb5e.9008c4"
+            ]
+        ]
+    },
+    {
+        "id": "5234bb5e.9008c4",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 540,
+        "wires": [
+            [
+                "2fbce853.86f4a8"
+            ]
+        ]
+    },
+    {
+        "id": "3ef33fad.785e7",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 750,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "291c4569.17f27a",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "func": "flow.set('sessionID',msg.payload.JSESSIONID);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 670,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2fbce853.86f4a8",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "func": "if(msg.statusCode === 204){\n    var msg1 = {payload : \"OK\"};\n}else{\n    var msg2 = {payload : \"something went wrong\"};\n}\nreturn [msg1,msg2];",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 630,
+        "y": 540,
+        "wires": [
+            [
+                "3ef33fad.785e7"
+            ],
+            [
+                "cc3c3cc3.3b91d"
+            ]
+        ]
+    },
+    {
+        "id": "cc3c3cc3.3b91d",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 750,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "a8d5a01d.89f3e8",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "GATEWAY - reboot gateway",
+        "info": "",
+        "x": 220,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "bd6e43ab.5ea208",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 780,
+        "wires": [
+            [
+                "24d629d8.2c1d76"
+            ]
+        ]
+    },
+    {
+        "id": "24d629d8.2c1d76",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/gateway/reboot\";\nmsg.method = \"POST\";\nmsg.headers =   {\n                Authorization: \"Bearer \"+ flow.get('sessionID')\n                }\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 780,
+        "wires": [
+            [
+                "88c325a6.92dc78"
+            ]
+        ]
+    },
+    {
+        "id": "88c325a6.92dc78",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 780,
+        "wires": [
+            [
+                "119f42fd.943acd"
+            ]
+        ]
+    },
+    {
+        "id": "7773f81d.c2edb",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 750,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "119f42fd.943acd",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "func": "if(msg.statusCode === 204){\n    var msg1 = {payload : \"OK\"};\n}else{\n    var msg2 = {payload : \"something went wrong\"};\n}\nreturn [msg1,msg2];",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 630,
+        "y": 780,
+        "wires": [
+            [
+                "7773f81d.c2edb"
+            ],
+            [
+                "abda7d4b.924c98"
+            ]
+        ]
+    },
+    {
+        "id": "abda7d4b.924c98",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 750,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "bfb13e0e.8f14d8",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "set IP Address of Master",
+        "func": "flow.set('masterIp',\"192.168.2.41\");\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 410,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "36048a8b.0e07c6",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "GATEWAY - reset gateway",
+        "info": "",
+        "x": 210,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "ec89dce3.373a58",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 660,
+        "wires": [
+            [
+                "fd69e2ce.29376"
+            ]
+        ]
+    },
+    {
+        "id": "fd69e2ce.29376",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/gateway/reset\";\nmsg.method = \"POST\";\nmsg.headers =   {\n                Authorization: \"Bearer \"+ flow.get('sessionID')\n                }\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 660,
+        "wires": [
+            [
+                "80bc4c2b.de67e8"
+            ]
+        ]
+    },
+    {
+        "id": "80bc4c2b.de67e8",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 660,
+        "wires": [
+            [
+                "2ccce88d.499df"
+            ]
+        ]
+    },
+    {
+        "id": "e8596757.ec44b",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 750,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "2ccce88d.499df",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "func": "if(msg.statusCode === 204){\n    var msg1 = {payload : \"OK\"};\n}else{\n    var msg2 = {payload : \"something went wrong\"};\n}\nreturn [msg1,msg2];",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 630,
+        "y": 660,
+        "wires": [
+            [
+                "e8596757.ec44b"
+            ],
+            [
+                "9095746b.415f38"
+            ]
+        ]
+    },
+    {
+        "id": "9095746b.415f38",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 750,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "8679b447.7a3b68",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "GATEWAY - get all events",
+        "info": "",
+        "x": 210,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "acb6a021.5ac31",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 900,
+        "wires": [
+            [
+                "c92bd712.441db"
+            ]
+        ]
+    },
+    {
+        "id": "c92bd712.441db",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/gateway/events?origin=ALL\";\nmsg.method = \"GET\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 900,
+        "wires": [
+            [
+                "e6101e4.703b0e"
+            ]
+        ]
+    },
+    {
+        "id": "e6101e4.703b0e",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 900,
+        "wires": [
+            [
+                "9d7e47f1.b4255"
+            ]
+        ]
+    },
+    {
+        "id": "9d7e47f1.b4255",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "e3615696.b67b28",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "GATEWAY - get gateway events",
+        "info": "",
+        "x": 230,
+        "y": 960,
+        "wires": []
+    },
+    {
+        "id": "70642f38.44d4a",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 1000,
+        "wires": [
+            [
+                "bc776b37.a8857"
+            ]
+        ]
+    },
+    {
+        "id": "bc776b37.a8857",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/gateway/events?origin=GATEWAY\";\nmsg.method = \"GET\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 1000,
+        "wires": [
+            [
+                "c9ec71e8.399fb8"
+            ]
+        ]
+    },
+    {
+        "id": "c9ec71e8.399fb8",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 1000,
+        "wires": [
+            [
+                "a44fa1e.ecda2e"
+            ]
+        ]
+    },
+    {
+        "id": "a44fa1e.ecda2e",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 960,
+        "wires": []
+    },
+    {
+        "id": "d7d703e4.02e94",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "GATEWAY - get masters events",
+        "info": "",
+        "x": 230,
+        "y": 1060,
+        "wires": []
+    },
+    {
+        "id": "619060a5.770be8",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 1100,
+        "wires": [
+            [
+                "ba4e45ee.50d458"
+            ]
+        ]
+    },
+    {
+        "id": "ba4e45ee.50d458",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/gateway/events?origin=MASTERS\";\nmsg.method = \"GET\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 1100,
+        "wires": [
+            [
+                "78c2a7d7.0458c"
+            ]
+        ]
+    },
+    {
+        "id": "78c2a7d7.0458c",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 1100,
+        "wires": [
+            [
+                "44087dfc.7d340c"
+            ]
+        ]
+    },
+    {
+        "id": "44087dfc.7d340c",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 1060,
+        "wires": []
+    },
+    {
+        "id": "5dfc6f45.34faf8",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "GATEWAY - get ports events",
+        "info": "",
+        "x": 220,
+        "y": 1160,
+        "wires": []
+    },
+    {
+        "id": "183fecf8.2cc0cb",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 1200,
+        "wires": [
+            [
+                "b93f0d0f.8191a"
+            ]
+        ]
+    },
+    {
+        "id": "b93f0d0f.8191a",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/gateway/events?origin=PORTS\";\nmsg.method = \"GET\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 1200,
+        "wires": [
+            [
+                "4b50e90a.11e648"
+            ]
+        ]
+    },
+    {
+        "id": "4b50e90a.11e648",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 1200,
+        "wires": [
+            [
+                "1c4b517c.c7ba7f"
+            ]
+        ]
+    },
+    {
+        "id": "1c4b517c.c7ba7f",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 1160,
+        "wires": []
+    },
+    {
+        "id": "c5b7b89c.3175e8",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "GATEWAY - get devices events",
+        "info": "",
+        "x": 230,
+        "y": 1260,
+        "wires": []
+    },
+    {
+        "id": "5f3a45d5.46a384",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 1300,
+        "wires": [
+            [
+                "cba4672e.ca989"
+            ]
+        ]
+    },
+    {
+        "id": "cba4672e.ca989",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/gateway/events?origin=DEVICES\";\nmsg.method = \"GET\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 1300,
+        "wires": [
+            [
+                "62685d00.29ab04"
+            ]
+        ]
+    },
+    {
+        "id": "62685d00.29ab04",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 1300,
+        "wires": [
+            [
+                "455fbfc8.dab3e"
+            ]
+        ]
+    },
+    {
+        "id": "455fbfc8.dab3e",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 1260,
+        "wires": []
+    },
+    {
+        "id": "42b2d66.32b0d28",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "MASTERS - get available masters",
+        "info": "",
+        "x": 240,
+        "y": 1360,
+        "wires": []
+    },
+    {
+        "id": "645f15da.0d8914",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 1400,
+        "wires": [
+            [
+                "6599f89c.3b8328"
+            ]
+        ]
+    },
+    {
+        "id": "6599f89c.3b8328",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/masters\";\nmsg.method = \"GET\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 1400,
+        "wires": [
+            [
+                "3e771639.1a5692"
+            ]
+        ]
+    },
+    {
+        "id": "3e771639.1a5692",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 1400,
+        "wires": [
+            [
+                "731f63e.7d3d69c"
+            ]
+        ]
+    },
+    {
+        "id": "731f63e.7d3d69c",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 1360,
+        "wires": []
+    },
+    {
+        "id": "80171446.8c036",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "MASTERS - get masters identification",
+        "info": "",
+        "x": 250,
+        "y": 1440,
+        "wires": []
+    },
+    {
+        "id": "808ae1ad.a86ce8",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 1480,
+        "wires": [
+            [
+                "de68bb10.527f4"
+            ]
+        ]
+    },
+    {
+        "id": "de68bb10.527f4",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.masterNr = \"1\";\nmsg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/masters/\"+msg.masterNr+\"/identification\";\nmsg.method = \"GET\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 1480,
+        "wires": [
+            [
+                "24d48e9.6e5c572"
+            ]
+        ]
+    },
+    {
+        "id": "24d48e9.6e5c572",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 1480,
+        "wires": [
+            [
+                "acb11023.fdc718"
+            ]
+        ]
+    },
+    {
+        "id": "acb11023.fdc718",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 1440,
+        "wires": []
+    },
+    {
+        "id": "25f190f3.513dc8",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "MASTERS - set masters location & function tag",
+        "info": "",
+        "x": 280,
+        "y": 1540,
+        "wires": []
+    },
+    {
+        "id": "111ab627.22ec6a",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 1580,
+        "wires": [
+            [
+                "4a00186f.41342"
+            ]
+        ]
+    },
+    {
+        "id": "4a00186f.41342",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.masterNr = \"1\";\nmsg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/masters/\"+msg.masterNr+\"/identification\";\nmsg.method = \"POST\";\nmsg.headers =   {\n                Authorization: \"Bearer \"+ flow.get('sessionID')\n                }\nmsg.payload =   {\n                \"applicationSpecificTag\": \"Fallback reader at the end of the belt\",\n                \"locationTag\": \"Down under\",\n                \"functionTag\": \"Code reading\"\n                }\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 1580,
+        "wires": [
+            [
+                "466ecfa3.30fe8"
+            ]
+        ]
+    },
+    {
+        "id": "466ecfa3.30fe8",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 1580,
+        "wires": [
+            [
+                "fc6f4802.34127"
+            ]
+        ]
+    },
+    {
+        "id": "92b07395.b47cf8",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 750,
+        "y": 1540,
+        "wires": []
+    },
+    {
+        "id": "fc6f4802.34127",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "func": "if(msg.statusCode === 204){\n    var msg1 = {payload : \"OK\"};\n}else{\n    var msg2 = {payload : \"something went wrong\"};\n}\nreturn [msg1,msg2];",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 630,
+        "y": 1580,
+        "wires": [
+            [
+                "92b07395.b47cf8"
+            ],
+            [
+                "21e53876.bdcdc8"
+            ]
+        ]
+    },
+    {
+        "id": "21e53876.bdcdc8",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 750,
+        "y": 1600,
+        "wires": []
+    },
+    {
+        "id": "b2696ef5.0b7c48",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "MASTERS - get capabilities",
+        "info": "",
+        "x": 220,
+        "y": 1660,
+        "wires": []
+    },
+    {
+        "id": "e734bb90.aa9d38",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 1700,
+        "wires": [
+            [
+                "e11959f9.d4f04"
+            ]
+        ]
+    },
+    {
+        "id": "e11959f9.d4f04",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.masterNr = \"1\";\nmsg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/masters/\"+msg.masterNr+\"/capabilities\";\nmsg.method = \"GET\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 1700,
+        "wires": [
+            [
+                "3f06a80f.6d72b8"
+            ]
+        ]
+    },
+    {
+        "id": "3f06a80f.6d72b8",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 1700,
+        "wires": [
+            [
+                "b9986608.9f1788"
+            ]
+        ]
+    },
+    {
+        "id": "b9986608.9f1788",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 1660,
+        "wires": []
+    },
+    {
+        "id": "311f4181.b70de6",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "PORTS - get port ID keys",
+        "info": "",
+        "x": 210,
+        "y": 1760,
+        "wires": []
+    },
+    {
+        "id": "6e39f267.e4d574",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 1800,
+        "wires": [
+            [
+                "9a47c8fb.ef4168"
+            ]
+        ]
+    },
+    {
+        "id": "9a47c8fb.ef4168",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.masterNr = \"1\";\nmsg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/masters/\"+msg.masterNr+\"/ports\";\nmsg.method = \"GET\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 1800,
+        "wires": [
+            [
+                "ef64014d.70296"
+            ]
+        ]
+    },
+    {
+        "id": "ef64014d.70296",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 1800,
+        "wires": [
+            [
+                "d37da9d7.f6c0d"
+            ]
+        ]
+    },
+    {
+        "id": "d37da9d7.f6c0d",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 1760,
+        "wires": []
+    },
+    {
+        "id": "aeb197e9.56a4e8",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "PORTS - get port ID keys",
+        "info": "",
+        "x": 210,
+        "y": 1860,
+        "wires": []
+    },
+    {
+        "id": "613bb026.9e3ca8",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 1900,
+        "wires": [
+            [
+                "be358039.839318"
+            ]
+        ]
+    },
+    {
+        "id": "be358039.839318",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.masterNr = \"1\"\nmsg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/masters/\"+msg.masterNr+\"/ports\";\nmsg.method = \"GET\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 1900,
+        "wires": [
+            [
+                "ef0d775c.289e88"
+            ]
+        ]
+    },
+    {
+        "id": "ef0d775c.289e88",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 1900,
+        "wires": [
+            [
+                "936127cb.b1e9d8"
+            ]
+        ]
+    },
+    {
+        "id": "936127cb.b1e9d8",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 1860,
+        "wires": []
+    },
+    {
+        "id": "adedb659.b1e0e",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "PORTS - get port capabilities",
+        "info": "",
+        "x": 220,
+        "y": 1960,
+        "wires": []
+    },
+    {
+        "id": "4a7f2ebf.00e0f8",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 2000,
+        "wires": [
+            [
+                "6b8b533b.d0ed84"
+            ]
+        ]
+    },
+    {
+        "id": "6b8b533b.d0ed84",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.masterNr = \"1\";\nmsg.portNr = \"1\";\nmsg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/masters/\"+msg.masterNr+\"/ports/\"+msg.portNr+\"/capabilities\";\nmsg.method = \"GET\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 2000,
+        "wires": [
+            [
+                "209ea81a.8cea78"
+            ]
+        ]
+    },
+    {
+        "id": "209ea81a.8cea78",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 2000,
+        "wires": [
+            [
+                "57e4d997.a9e22"
+            ]
+        ]
+    },
+    {
+        "id": "57e4d997.a9e22",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 1960,
+        "wires": []
+    },
+    {
+        "id": "68ca25ac.66fafc",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "PORTS - get port configuration",
+        "info": "",
+        "x": 230,
+        "y": 2060,
+        "wires": []
+    },
+    {
+        "id": "d5085506.7b5bc",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 2100,
+        "wires": [
+            [
+                "1f6e6c54.001604"
+            ]
+        ]
+    },
+    {
+        "id": "1f6e6c54.001604",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.masterNr = \"1\";\nmsg.portNr = \"1\";\nmsg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/masters/\"+msg.masterNr+\"/ports/\"+msg.portNr+\"/configuration\";\nmsg.method = \"GET\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 2100,
+        "wires": [
+            [
+                "c59ed738.e39888"
+            ]
+        ]
+    },
+    {
+        "id": "c59ed738.e39888",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 2100,
+        "wires": [
+            [
+                "cf4f8ab5.48e168"
+            ]
+        ]
+    },
+    {
+        "id": "cf4f8ab5.48e168",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 2060,
+        "wires": []
+    },
+    {
+        "id": "54680a5.46cf474",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "PORTS - set port configuration",
+        "info": "",
+        "x": 230,
+        "y": 2160,
+        "wires": []
+    },
+    {
+        "id": "6d6d629.9fed71c",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 2200,
+        "wires": [
+            [
+                "6357b280.7c6544"
+            ]
+        ]
+    },
+    {
+        "id": "6357b280.7c6544",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.masterNr = \"1\";\nmsg.portNr = \"1\";\nmsg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/masters/\"+msg.masterNr+\"/ports/\"+msg.portNr+\"/configuration\";\nmsg.method = \"POST\";\nmsg.headers =   {\n                Authorization: \"Bearer \"+ flow.get('sessionID')\n                };\nmsg.payload =   {\n                  \"mode\": \"IOLINK_AUTOSTART\",\n                  \"cycleTime\": {\n                                \"value\": 80,\n                                \"unit\": \"ms\"\n                                }\n                };\n                \nreturn msg;\n\n/*\nmsg.payload =   {\n                  \"mode\": \"IOLINK_AUTOSTART\",\n                  \"validationAndBackup\": \"TYPE_COMPATIBLE_DEVICE_V1.1\",\n                  \"cycleTime\": {\n                                \"value\": 2.3,\n                                \"unit\": \"ms\"\n                                },\n                  \"vendorId\": 26,\n                  \"deviceId\": 333,\n                  \"iqConfiguration\": \"DIGITAL_INPUT\",\n                  \"deviceAlias\": \"Distance_sensor_1\"\n                };\n                \n*/",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 2200,
+        "wires": [
+            [
+                "469e01bb.9465f"
+            ]
+        ]
+    },
+    {
+        "id": "469e01bb.9465f",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 2200,
+        "wires": [
+            [
+                "87dea72e.01a51"
+            ]
+        ]
+    },
+    {
+        "id": "87dea72e.01a51",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "func": "if(msg.statusCode === 204){\n    var msg1 = {payload : \"OK\"};\n}else{\n    var msg2 = {payload : \"something went wrong\"};\n};\nreturn [msg1,msg2];",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 630,
+        "y": 2200,
+        "wires": [
+            [
+                "cd92d77f.45cce"
+            ],
+            [
+                "addf9d54.1d349"
+            ]
+        ]
+    },
+    {
+        "id": "cd92d77f.45cce",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 750,
+        "y": 2160,
+        "wires": []
+    },
+    {
+        "id": "addf9d54.1d349",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 750,
+        "y": 2220,
+        "wires": []
+    },
+    {
+        "id": "a28d45cb.9b165",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "PORTS - get port status",
+        "info": "",
+        "x": 210,
+        "y": 2280,
+        "wires": []
+    },
+    {
+        "id": "1bcbaff4.073cc8",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 2320,
+        "wires": [
+            [
+                "56725b5c.7fe2b4"
+            ]
+        ]
+    },
+    {
+        "id": "56725b5c.7fe2b4",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.masterNr = \"1\";\nmsg.portNr = \"1\";\nmsg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/masters/\"+msg.masterNr+\"/ports/\"+msg.portNr+\"/status\";\nmsg.method = \"GET\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 2320,
+        "wires": [
+            [
+                "acbace5b.bf12c8"
+            ]
+        ]
+    },
+    {
+        "id": "acbace5b.bf12c8",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 2320,
+        "wires": [
+            [
+                "2800f2b9.e50f5e"
+            ]
+        ]
+    },
+    {
+        "id": "2800f2b9.e50f5e",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 2280,
+        "wires": []
+    },
+    {
+        "id": "c6af1660.40bfe8",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "PORTS - get port status",
+        "info": "",
+        "x": 210,
+        "y": 2380,
+        "wires": []
+    },
+    {
+        "id": "ae93cf07.94714",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 2420,
+        "wires": [
+            [
+                "a85ec2ae.38d448"
+            ]
+        ]
+    },
+    {
+        "id": "a85ec2ae.38d448",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.masterNr = \"1\";\nmsg.portNr = \"1\";\nmsg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/masters/\"+msg.masterNr+\"/ports/\"+msg.portNr+\"/datastorage\";\nmsg.method = \"GET\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 2420,
+        "wires": [
+            [
+                "86f5ffc0.84b67"
+            ]
+        ]
+    },
+    {
+        "id": "86f5ffc0.84b67",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 2420,
+        "wires": [
+            [
+                "1a38a5c8.2ae1b2"
+            ]
+        ]
+    },
+    {
+        "id": "1a38a5c8.2ae1b2",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 2380,
+        "wires": []
+    },
+    {
+        "id": "414d0286.8760ec",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "PORTS - set port configuration - NOT WORKING!!!",
+        "info": "",
+        "x": 290,
+        "y": 2500,
+        "wires": []
+    },
+    {
+        "id": "7889859a.442954",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 2540,
+        "wires": [
+            [
+                "8db3fa27.bfe2e"
+            ]
+        ]
+    },
+    {
+        "id": "8db3fa27.bfe2e",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.masterNr = \"1\";\nmsg.portNr = \"1\";\nmsg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/masters/\"+msg.masterNr+\"/ports/\"+msg.portNr+\"/datastorage\";\nmsg.method = \"POST\";\nmsg.headers =   {\n                Authorization: \"Bearer \"+ flow.get('sessionID')\n                };\nmsg.payload =   {\n                  \"header\": {},\n                  \"content\": \"\"\n                };\n                \nreturn msg;\n\n/*\nmsg.payload =   {\n                  \"header\": {\n                    \"vendorId\": 15,\n                    \"deviceId\": 65253,\n                    \"ioLinkRevision\": \"1.1\"\n                  },\n                  \"content\": \"TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWFzb24sIGJ1dCBieSB0aGl\"\n                };\n                \nmsg.payload =   {\n                  \"header\": {},\n                  \"content\": \"\"\n                }\n*/",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 2540,
+        "wires": [
+            [
+                "c80a9752.ae561"
+            ]
+        ]
+    },
+    {
+        "id": "c80a9752.ae561",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 2540,
+        "wires": [
+            [
+                "4bf84203.68c1ac"
+            ]
+        ]
+    },
+    {
+        "id": "4bf84203.68c1ac",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "func": "if(msg.statusCode === 204){\n    var msg1 = {payload : \"OK\"};\n}else{\n    var msg2 = {payload : \"something went wrong\"};\n};\nreturn [msg1,msg2];",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 630,
+        "y": 2540,
+        "wires": [
+            [
+                "1b25f91.4a5b007"
+            ],
+            [
+                "b62c5586.27d5b"
+            ]
+        ]
+    },
+    {
+        "id": "1b25f91.4a5b007",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 750,
+        "y": 2500,
+        "wires": []
+    },
+    {
+        "id": "b62c5586.27d5b",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 750,
+        "y": 2560,
+        "wires": []
+    },
+    {
+        "id": "3965587b.7cdf4",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "DEVICES - get devices",
+        "info": "",
+        "x": 200,
+        "y": 2640,
+        "wires": []
+    },
+    {
+        "id": "393bb751.5c2c88",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 2680,
+        "wires": [
+            [
+                "34bce7b4.1a7e9"
+            ]
+        ]
+    },
+    {
+        "id": "34bce7b4.1a7e9",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.masterNr = \"1\";\nmsg.portNr = \"1\";\nmsg.deviceAlias = \"master\"+masterNr+\"port\"+msg.masterNr;\nmsg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/devices\";\nmsg.method = \"GET\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 2680,
+        "wires": [
+            [
+                "a3e24e2f.2cf1b8"
+            ]
+        ]
+    },
+    {
+        "id": "a3e24e2f.2cf1b8",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 2680,
+        "wires": [
+            [
+                "6699036f.497824"
+            ]
+        ]
+    },
+    {
+        "id": "6699036f.497824",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 2640,
+        "wires": []
+    },
+    {
+        "id": "b34da249.f9fb58",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "DEVICES - get device identification",
+        "info": "",
+        "x": 240,
+        "y": 2740,
+        "wires": []
+    },
+    {
+        "id": "ccb5da4.48ac028",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 2780,
+        "wires": [
+            [
+                "94eb4e2f.031508"
+            ]
+        ]
+    },
+    {
+        "id": "94eb4e2f.031508",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.masterNr = \"1\";\nmsg.portNr = \"1\";\nmsg.deviceAlias = \"master\"+msg.masterNr+\"port\"+msg.masterNr;\nmsg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/devices/\"+msg.deviceAlias+\"/identification\";\nmsg.method = \"GET\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 2780,
+        "wires": [
+            [
+                "f006b28e.c03338"
+            ]
+        ]
+    },
+    {
+        "id": "f006b28e.c03338",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 2780,
+        "wires": [
+            [
+                "3761185c.bad7"
+            ]
+        ]
+    },
+    {
+        "id": "3761185c.bad7",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 2740,
+        "wires": []
+    },
+    {
+        "id": "83d90e38.54e2d",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "DEVICES - set process data",
+        "info": "",
+        "x": 220,
+        "y": 3140,
+        "wires": []
+    },
+    {
+        "id": "2e630b4b.0a3384",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 3180,
+        "wires": [
+            [
+                "8d97c406.92a9a"
+            ]
+        ]
+    },
+    {
+        "id": "8d97c406.92a9a",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.masterNr = \"1\";\nmsg.portNr = \"1\";\nmsg.deviceAlias = \"master\"+msg.masterNr+\"port\"+msg.masterNr;\nmsg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/devices/\"+msg.deviceAlias+\"/processdata/value\";\nmsg.method = \"POST\";\nmsg.headers =   {\n                Authorization: \"Bearer \"+ flow.get('sessionID')\n                };\nmsg.payload =   {\n                  \"ioLink\": {\n                                \"valid\": true,\n                                \"value\": [\n                                  15,\n                                  123,\n                                  126,\n                                  236\n                                ]\n                            },\n                  \"iqValue\": true\n                }\nreturn msg;\n\n/*\nmsg.payload =   {\n                  \"ioLink\": {\n                                \"valid\": true,\n                                \"value\": [\n                                  15,\n                                  123,\n                                  126,\n                                  236\n                                ]\n                            },\n                  \"iqValue\": true\n                }\n*/",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 3180,
+        "wires": [
+            [
+                "c37bf3e9.9e4778"
+            ]
+        ]
+    },
+    {
+        "id": "c37bf3e9.9e4778",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 3180,
+        "wires": [
+            [
+                "3a3e6c8c.cce87c"
+            ]
+        ]
+    },
+    {
+        "id": "3a3e6c8c.cce87c",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "func": "if(msg.statusCode === 204){\n    var msg1 = {payload : \"OK\"};\n}else{\n    var msg2 = {payload : \"something went wrong\"};\n};\nreturn [msg1,msg2];",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 630,
+        "y": 3180,
+        "wires": [
+            [
+                "3dbcf26e.4aaf9e"
+            ],
+            [
+                "ebe0346f.2cb18"
+            ]
+        ]
+    },
+    {
+        "id": "3dbcf26e.4aaf9e",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 750,
+        "y": 3140,
+        "wires": []
+    },
+    {
+        "id": "ebe0346f.2cb18",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 750,
+        "y": 3200,
+        "wires": []
+    },
+    {
+        "id": "b9b55d20.a708b",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "DEVICES - set identification --NOT WORKING--",
+        "info": "",
+        "x": 280,
+        "y": 2840,
+        "wires": []
+    },
+    {
+        "id": "b6760b9d.42fff8",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 2880,
+        "wires": [
+            [
+                "6d68bb80.25da54"
+            ]
+        ]
+    },
+    {
+        "id": "6d68bb80.25da54",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.masterNr = \"1\";\nmsg.portNr = \"1\";\nmsg.deviceAlias = \"master\"+msg.masterNr+\"port\"+msg.masterNr;\nmsg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/devices/\"+msg.deviceAlias+\"/processdata/value\";\nmsg.method = \"POST\";\nmsg.headers =   {\n                Authorization: \"Bearer \"+ flow.get('sessionID')\n                };\nmsg.payload =   {\n                  \"applicationSpecificTag\": \"Fallback light switch at the end of the belt\"\n                };\nreturn msg;\n/*\nmsg.payload =   {\n                  \"applicationSpecificTag\": \"Fallback light switch at the end of the belt\",\n                  \"locationTag\": \"Down under\",\n                  \"functionTag\": \"Check start of belt\"\n                };\n*/",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 2880,
+        "wires": [
+            [
+                "ecf40246.eac7a8"
+            ]
+        ]
+    },
+    {
+        "id": "ecf40246.eac7a8",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 2880,
+        "wires": [
+            [
+                "bf8cd1f3.314e28"
+            ]
+        ]
+    },
+    {
+        "id": "bf8cd1f3.314e28",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "func": "if(msg.statusCode === 204){\n    var msg1 = {payload : \"OK\"};\n}else{\n    var msg2 = {payload : \"something went wrong\"};\n};\nreturn [msg1,msg2];",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 630,
+        "y": 2880,
+        "wires": [
+            [
+                "11642848.58c548"
+            ],
+            [
+                "4ccd25df.55424c"
+            ]
+        ]
+    },
+    {
+        "id": "11642848.58c548",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 750,
+        "y": 2840,
+        "wires": []
+    },
+    {
+        "id": "4ccd25df.55424c",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 750,
+        "y": 2900,
+        "wires": []
+    },
+    {
+        "id": "220e9534.62ba6a",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "DEVICES - get device capabilities",
+        "info": "",
+        "x": 240,
+        "y": 2940,
+        "wires": []
+    },
+    {
+        "id": "39b6d728.2e5328",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 2980,
+        "wires": [
+            [
+                "c7ade6ce.94572"
+            ]
+        ]
+    },
+    {
+        "id": "c7ade6ce.94572",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.masterNr = \"1\";\nmsg.portNr = \"1\";\nmsg.deviceAlias = \"master\"+msg.masterNr+\"port\"+msg.masterNr;\nmsg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/devices/\"+msg.deviceAlias+\"/capabilities\";\nmsg.method = \"GET\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 2980,
+        "wires": [
+            [
+                "196a4427.33f0c4"
+            ]
+        ]
+    },
+    {
+        "id": "196a4427.33f0c4",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 2980,
+        "wires": [
+            [
+                "789f1c56.db410c"
+            ]
+        ]
+    },
+    {
+        "id": "789f1c56.db410c",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 2940,
+        "wires": []
+    },
+    {
+        "id": "7bceac5d.cfba8c",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "DEVICES - get device process data value byte array, measure",
+        "info": "",
+        "x": 320,
+        "y": 3040,
+        "wires": []
+    },
+    {
+        "id": "49f1c37a.88bc94",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 3080,
+        "wires": [
+            [
+                "c5e7bef5.d00cd"
+            ]
+        ]
+    },
+    {
+        "id": "c5e7bef5.d00cd",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.masterNr = \"1\";\nmsg.portNr = \"1\";\nmsg.deviceAlias = \"master\"+msg.masterNr+\"port\"+msg.masterNr;\nmsg.dataformat = \"byteArray\"; //or \"iodd\"\nmsg.content = \"measure\"; // or \"control\" to get \"measurecontrol\"\nmsg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/devices/\"+msg.deviceAlias+\"/processdata/value?format=\"+msg.dataformat+\"&content=\"+msg.content;\nmsg.method = \"GET\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 3080,
+        "wires": [
+            [
+                "b907b21b.cdbb4"
+            ]
+        ]
+    },
+    {
+        "id": "b907b21b.cdbb4",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 3080,
+        "wires": [
+            [
+                "6da3f1ca.61d348"
+            ]
+        ]
+    },
+    {
+        "id": "6da3f1ca.61d348",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 3040,
+        "wires": []
+    },
+    {
+        "id": "8843d9be.9a5f98",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "DEVICES - get device parameters -- NOT WORKING---",
+        "info": "",
+        "x": 300,
+        "y": 3260,
+        "wires": []
+    },
+    {
+        "id": "ebe818a2.38ceb8",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 3300,
+        "wires": [
+            [
+                "841a01b2.3f1278"
+            ]
+        ]
+    },
+    {
+        "id": "841a01b2.3f1278",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.masterNr = \"1\";\nmsg.portNr = \"1\";\nmsg.deviceAlias = \"master\"+msg.masterNr+\"port\"+msg.masterNr;\nmsg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/devices/\"+msg.deviceAlias+\"/parameters\";\nmsg.method = \"GET\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 3300,
+        "wires": [
+            [
+                "4860ec06.8079cc"
+            ]
+        ]
+    },
+    {
+        "id": "4860ec06.8079cc",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 3300,
+        "wires": [
+            [
+                "b9de0daa.e8222"
+            ]
+        ]
+    },
+    {
+        "id": "b9de0daa.e8222",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 3260,
+        "wires": []
+    },
+    {
+        "id": "f0897d43.59b5f",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "DEVICES - get device parameter index",
+        "info": "",
+        "x": 250,
+        "y": 3360,
+        "wires": []
+    },
+    {
+        "id": "1f9d7ba3.ead1c4",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 3400,
+        "wires": [
+            [
+                "92647945.756b6"
+            ]
+        ]
+    },
+    {
+        "id": "92647945.756b6",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.masterNr = \"1\";\nmsg.portNr = \"1\";\nmsg.deviceAlias = \"master\"+msg.masterNr+\"port\"+msg.masterNr;\nmsg.dataformat = \"byteArray\"; //or \"iodd\"\nmsg.parameterIndex = \"82\";\nmsg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/devices/\"+msg.deviceAlias+\"/parameters/\"+msg.parameterIndex+\"/value?\"+msg.dataformat;\nmsg.method = \"GET\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 3400,
+        "wires": [
+            [
+                "8af4b026.2a2e68"
+            ]
+        ]
+    },
+    {
+        "id": "8af4b026.2a2e68",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 3400,
+        "wires": [
+            [
+                "5a322fbe.a0dac8"
+            ]
+        ]
+    },
+    {
+        "id": "5a322fbe.a0dac8",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 670,
+        "y": 3360,
+        "wires": []
+    },
+    {
+        "id": "bfc58816.4cc298",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "DEVICES - set parameters index ",
+        "info": "",
+        "x": 230,
+        "y": 3560,
+        "wires": []
+    },
+    {
+        "id": "ddf7989d.c17568",
+        "type": "inject",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 160,
+        "y": 3600,
+        "wires": [
+            [
+                "23558f77.d3d088"
+            ]
+        ]
+    },
+    {
+        "id": "23558f77.d3d088",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "Create request",
+        "func": "msg.masterNr = \"1\";\nmsg.portNr = \"1\";\nmsg.deviceAlias = \"master\"+msg.masterNr+\"port\"+msg.masterNr;\nmsg.parameterIndex = \"82\";\nmsg.url = \"http://\" + flow.get('masterIp') + \"/iolink/v1/devices/\"+msg.deviceAlias+\"/parameters/value\";\nmsg.method = \"POST\";\nmsg.headers =   {\n                Authorization: \"Bearer \"+ flow.get('sessionID')\n                };\nmsg.payload =   {\n                  \"ioLink\": {\n                                \"valid\": true,\n                                \"value\": [\n                                  15,\n                                  123,\n                                  126,\n                                  236\n                                ]\n                            },\n                  \"iqValue\": true\n                }\nreturn msg;\n\n/*\nmsg.payload =   {\n                  \"ioLink\": {\n                                \"valid\": true,\n                                \"value\": [\n                                  15,\n                                  123,\n                                  126,\n                                  236\n                                ]\n                            },\n                  \"iqValue\": true\n                }\n*/",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 320,
+        "y": 3600,
+        "wires": [
+            [
+                "7b7a81b8.a994"
+            ]
+        ]
+    },
+    {
+        "id": "7b7a81b8.a994",
+        "type": "http request",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "method": "use",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 490,
+        "y": 3600,
+        "wires": [
+            [
+                "ac0550c.66cbe3"
+            ]
+        ]
+    },
+    {
+        "id": "ac0550c.66cbe3",
+        "type": "function",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "func": "if(msg.statusCode === 204){\n    var msg1 = {payload : \"OK\"};\n}else{\n    var msg2 = {payload : \"something went wrong\"};\n};\nreturn [msg1,msg2];",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 630,
+        "y": 3600,
+        "wires": [
+            [
+                "2c9b617d.7c5db6"
+            ],
+            [
+                "49c15305.281654"
+            ]
+        ]
+    },
+    {
+        "id": "2c9b617d.7c5db6",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 750,
+        "y": 3560,
+        "wires": []
+    },
+    {
+        "id": "49c15305.281654",
+        "type": "debug",
+        "z": "5ea6d14d.86d94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 750,
+        "y": 3620,
+        "wires": []
+    },
+    {
+        "id": "d1ae3ea5.11547",
+        "type": "comment",
+        "z": "5ea6d14d.86d94",
+        "name": "top do ab hier :-)",
+        "info": "",
+        "x": 200,
+        "y": 3500,
+        "wires": []
+    }
+]
